@@ -24,3 +24,25 @@ This program generates two outputs
 2. a console outut, which outputs for every line the found relation-sentences and their categorization
 
 It's probably wise to add code to output a json or another format which can easily be imported in a database
+
+----------------------------------
+
+IMPORTANT UPDATES PLANNED:
+
+- In addition to the raw text for source, content, and destination: a list of terms from a linked entity glossary would be linked
+- These would come from an embedding space; and the distance between all pairs of token (with distance <= 0.6) would be precomputed and stored in a database, see below
+
+Here is a proposed database schema to handle the reporting obligation in its final form
+
+- `LawParagraph`: ID, TEXT_OF_PARAGRAPH (String), TITLE_SECTION (String), TITLE_PART (String), TITLE_DOC (String), SOURCE_DOCUMENT (see Document database)
+- `ObligationTerm`: ID, MAIN_TEXT (String), POSSIBLE_TEXTS (Array of String)
+- `ObligationTermsDistance`: ObligationTerm1.ID, ObligationTerm2.ID, Distance (between 0.0 and 1.0)
+- `Obligation`: ID, OBLIGATION_PARA (LawParagraph), OBLIGATION_SOURCE (ObligationTerm), OBLIGATION_SOURCE_TEXT (String), OBLIGATION_CONTENTS (Array of ObligationTerms), OBLIGATION_CONTENTS_TEXT (String), OBLIGATION_DESTINATION (ObligationTerm), OBLIGATION_DESTINATION_TEXT (String), OBLIGATION_RECURRENCE (Likely/Possible/Unlikely), OBLIGATION_REOCCURRENCE (Likely/Possible/Unlikely), OBLIGATION_FREQUENCY_TEXT (String)
+
+Then, search would work this way:
+
+- Three text boxes (Source, Content, Destination) where users can type a list of ObligationTerms (with auto-completion)
+- For each text box, an acceptable distance is selected (by default: 0.15; options: 0.00; 0.15; 0.25; 0.40; 0.50; 0.60)
+- For each text box, a list of acceptable ObligationTerms is computed (all terms whose distance with one of the terms listed in the box is smaller than the acceptable distance)
+- Then all obligations which contain one of the acceptable terms in the correct field are returned.
+- These can then be reranked based on a distance score, if desired, but other orders are possible (date of source document, etc...)
