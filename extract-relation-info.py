@@ -11,9 +11,17 @@ input_sentences = [
     "2. Institutions shall have in place clearly defined policies and procedures for the overall management of the trading book. These policies and procedures shall at least address the activities the institution considers to be trading and as constituting part of the trading book for own funds requirement purposes. These policies and procedures shall at least address the extent to which a position can be marked-to-market daily by reference to an active, liquid two-way market. These policies and procedures shall at least address for positions that are marked-to-model, the extent to which the institution can ❬identify all material risks of the position ‖ and/or hedge all material risks of the position with instruments for which an active, liquid two-way market exists ‖ and/or derive reliable estimates for the key assumptions and parameters used in the model❭. These policies and procedures shall at least address the extent to which the institution can, and is required to, generate valuations for the position that can be validated externally in a consistent manner. These policies and procedures shall at least address the extent to which legal restrictions or other operational requirements would impede the institution's ability to effect a liquidation or hedge of the position in the short term. These policies and procedures shall at least address the extent to which the institution can, and is required to, actively manage the risks of positions within its trading operation. These policies and procedures shall at least address the extent to which the institution may transfer risk or positions between the non-trading and trading books and the criteria for such transfers.",
     #"The EBA shall issue additional guidelines twice a year on what types of investments are considered at risk.",
 ]
-input_sentences = open('extract-relation-info.py.input.txt')
 
-outfile_path = "./out.html"
+
+input_sentences=[  'EBA shall review something and they should notify this to the commision'   ]
+
+input_sentences = open('input_dir/sentences-small.txt')
+
+#input_sentences=[  "Section 1", "Article 1", "EBA shall review something and they should notify this to the commision following " ] 
+
+
+
+outfile_path = "output_dir/out_francois.html"
 
 if len(sys.argv) > 1 and len(sys.argv[1])>=1:
     input_sentences = open(sys.argv[1])
@@ -173,6 +181,8 @@ def process_sentence(input_sentence, input_sentence_following_data):
         or any((noun in input_sentence) for noun in interesting_nouns)
     ): return
 
+    
+    #this "if statement" checks the same thing as the previous statement?? AD
     if not(False
         or re.search(r'\b(' + '|'.join(interesting_verbs) + r')\b', input_sentence)
         or re.search(r'\b(' + '|'.join(interesting_nouns) + r')s?\b', input_sentence)
@@ -230,7 +240,7 @@ def process_sentence(input_sentence, input_sentence_following_data):
             and (verb != 'comply' or not(" following " in srl_output))
         ))
 
-        # (abort if none found a match)    
+        # (abort if none found a match)
         if not(is_relevant_case): continue
 
         # write pending locations in the file
@@ -630,10 +640,11 @@ def process_sentence(input_sentence, input_sentence_following_data):
 print("Running on the input sentences...")
 for input_sentence in input_sentences:
     input_sentence = input_sentence.rstrip('\r\n')
-    input_sentence_following_data = re.sub(r'(^[^❮]+|[^❯]+$)',r'',input_sentence)
-    if len(input_sentence_following_data) > 0: input_sentence = input_sentence.replace(input_sentence_following_data, '', 1)
+    input_sentence_following_data = re.sub(r'(^[^❮]+|[^❯]+$)',r'',input_sentence)  #finds everything between " ❮ ❯ "
+    if len(input_sentence_following_data) > 0: input_sentence = input_sentence.replace(input_sentence_following_data, '', 1)  #remove everything inside " ❮ ❯ " from the string
     
     update_pending_location_names(input_sentence)
+    #keep track of  ['part ','annex '],['title '],['chapter '],['section '],['sub-section '],['article '], and save sentence to corresponding location in python list pending_location_names
 
     update_last_known_subject(input_sentence)
     
