@@ -2,3 +2,5 @@
 /spacy-textcat/
 /spacy-textcat.zip
 /bert-base-srl-*.tar.gz
+.ipynb_checkpoints/
+
