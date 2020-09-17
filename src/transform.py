@@ -9,7 +9,7 @@ from src.utils import SeekableIterator
 
 class ListTransformer():
     
-    def __init__( self, cas: Cas=None ):
+    def __init__( self, cas: Cas ):
         
         '''
         Add a reporting obligations view to the cas.
@@ -18,7 +18,7 @@ class ListTransformer():
         
         self.cas=cas
         
-    def add_reporting_obligation_view( self , OldSofaID: str, NewSofaID: str='ReportingObligationView', \
+    def add_reporting_obligation_view( self , OldSofaID: str, NewSofaID: str='ListView', \
                                       value_between_tagtype: str="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
                                       paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph" ):
         

@@ -4,24 +4,30 @@ import spacy
 from xml.dom.minidom import parseString
 from allennlp.predictors.predictor import Predictor
 
+from cassis import Cas
+
 from src.keywords_nouns_verbs import ALL_ARG2_KEYWORDS, PLURAL_OR_NODET_ARG2_KEYWORDS, INTERESTING_VERBS, OBLIGATION_VERBS, INTERESTING_NOUNS, OBLIGATION_NOUNS, INTERESTING_NOUNS_VALID_VERBS_DIRECT, INTERESTING_NOUNS_VALID_VERBS_SUBJ, PENDING_LOCATION_TYPES
 
 from src.utils import looks_like_arg0, looks_like_arg2, match_class_in_list, match_class , update_class, text_of
 
 class ReportingObligationsFinder():
     
-    def __init__( self, sentences=None):
+    def __init__( self, cas:Cas , allen_nlp_path:str , spacy_path:str  ):
         
         '''
         Find reporting obligations in text. See method process_sentences.
         :param sentences: List. List of Strings (i.e. sentences).
         '''
         
-        if sentences is None:
-            self.sentences=[]
-        else:
-            self.sentences=list( sentences )
+        self.cas=cas #maybe add isinstance check
+        
+        #if sentences is None:
+        #    self.sentences=[]
+        #else:
+        #    self.sentences=list( sentences )
             
+        self.allen_nlp_path=allen_nlp_path
+        self.spacy_path=spacy_path
         self.last_known_subject= ''
         #remember the current location ( i.e. part/annex/title/chapter/... )
         self.pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
@@ -88,15 +94,15 @@ class ReportingObligationsFinder():
             if when_clause_subject and looks_like_arg0(when_clause_subject):
                 self.last_known_subject = when_clause_subject
           
-    def load_parser( self, path ):
+    def load_parser( self ):
         
         '''
         Given a path, method loads AllenNLP parser (self.srl) 
         :return: None.
         '''
     
-        print( f"loading AllenNLP predictor from {path}" )
-        self.srl = Predictor.from_path( path )
+        print( f"loading AllenNLP predictor from {self.allen_nlp_path}" )
+        self.srl = Predictor.from_path( self.allen_nlp_path )
     
     def parse_sentence(  self, input_sentence ):
         
@@ -111,15 +117,15 @@ class ReportingObligationsFinder():
         
         return parsed_sentence
     
-    def load_spacy_model( self, path ):
+    def load_spacy_model( self ):
         
         '''
         Given a path, method loads spacy model (self.nlp) 
         :return: None.
         '''
-        
-        print( f"loading spacy model from {path}" )
-        self.nlp=spacy.load( path )
+    
+        print( f"loading spacy model from {self.spacy_path}" )
+        self.nlp=spacy.load( self.spacy_path )
         
         
     @staticmethod
@@ -698,7 +704,7 @@ class ReportingObligationsFinder():
     
         return list_xml
     
-    def process_sentences( self, allen_nlp_path , spacy_path ):
+    def process_sentences( self, ListSofaID: str='ListView'  ):
         
         '''
         Method iterates over self.sentences. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned. 
@@ -708,12 +714,14 @@ class ReportingObligationsFinder():
         :return: List.
         '''
         
-        self.load_parser( allen_nlp_path )
-        self.load_spacy_model( spacy_path )
+        self.load_parser()
+        self.load_spacy_model()
 
         list_xml=[]
+
+        sentences=self.cas.get_view( ListSofaID ).sofa_string.split( "\n" )
         
-        for sentence in self.sentences:
+        for sentence in sentences:
             
             sentence=sentence.rstrip( '\r\n' )
             subsentence = re.sub(r'(^[^❮]+|[^❯]+$)',r'', sentence)  #finds everything between " ❮ ❯ " ==>the main sentence
@@ -734,7 +742,16 @@ class ReportingObligationsFinder():
                 
         return list_xml
     
-
+    def add_xml_to_cas( self , list_xml:list , ROSofaID: str='ReportingObligationsView' ):
+        
+        self.cas.create_view(ROSofaID)
+        
+        list_xml_string=[]
+        for xml in list_xml:
+            list_xml_string.append(xml.lastChild.toxml())
+                
+        self.cas.get_view( ROSofaID ).sofa_string = "\n".join( list_xml_string )
+        
     @staticmethod
     def print_to_html( list_xml , template_path, output_path  ):
         
