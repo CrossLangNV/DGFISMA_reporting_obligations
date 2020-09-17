@@ -1,0 +1,128 @@
+<!doctype html>
+<style>
+
+    p {
+        margin: 0.75em 0px;
+        line-height: 2em;
+        white-space: nowrap;
+    }
+
+    span {
+        border: 2px solid currentColor;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    span {
+        background: lightblue;
+        color: royalblue;
+    }
+
+    .V {
+        background: yellow;
+        color: orangered;
+        font-weight: bold;
+    }
+
+    .ARG0,.ARG1,.ARG2,.C-ARG1 {
+        color: black;
+        background: white;
+    }
+
+    .ARGM-TMP {
+        color: green;
+        background: lightgreen;
+    }
+
+    .ARGM-NEG {
+        color: pink;
+        background: darkred;
+        border-color: darkred;
+    }
+
+    .PUNCT {
+        color: silver;
+        background: white;
+        border: none; padding: 0;
+    }
+
+    .ARG2 {
+        border-style: dotted;
+    }
+
+    .ARG1, .C-ARG1 {
+        color: white;
+        background: black;
+        border-color: black;
+        border-style: solid;
+    }
+
+    .ARG3, .ARGM-PRP, .ARGM-PRD, .ARGM-PNC {
+        color: white;
+        background: royalblue;
+        border-color: royalblue;
+        border-style: solid;
+    }
+
+    .updated-tag {
+        outline: 3px solid fuchsia;
+        outline-offset: 2px;
+    }
+
+    p[data-frequency-class="1"] {
+        opacity: 0.15;
+    }
+
+    p[data-frequency-might-be-3="true"]::before {
+        content: "♺";
+        border: 7px solid royalblue;
+        margin-right: 5px;
+        border-radius: 5px;
+        background: royalblue;
+        color: white;
+    }
+    p[data-frequency-class="3"]::before {
+        border-color: red;
+        background: red;
+        color: yellow;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+        font-family: sans-serif;
+        font-size: 12px;
+        color: silver;
+        font-weight: bold;
+        margin: 5px 0px;
+        border-left: 3px solid silver;
+        padding-left: 3px;
+    }
+    h2 { border-left-width: 3px; }
+    h2 { border-left-width: 6px; }
+    h3 { border-left-width: 9px; }
+    h4 { border-left-width: 12px; }
+    h5 { border-left-width: 15px; }
+    h6 { border-left-width: 18px; }
+    p + :not(p):not(h6) { margin-top: 45px; }
+
+    [data-old-text] {
+        outline: 4px dashed fuchsia;
+        outline-offset: 1px;
+        position: relative;
+    }
+    [TODO] {
+        outline: 4px dashed red;
+        outline-offset: 1px;
+    }
+
+    [data-old-text]:hover::before {
+        content: attr(data-old-text);
+        background: fuchsia;
+        color: white;
+        position: absolute; top: -2em;
+        padding: 1px 6px; border-radius: 4px;
+    }
+
+</style>
+
+<h6>Article 4</h6>
+<p data-frequency-class="3" data-frequency-could-be-1="false" data-frequency-could-be-2="false" data-frequency-could-be-3="true" data-frequency-might-be-1="false" data-frequency-might-be-2="false" data-frequency-might-be-3="true" data-frequency-split="0.005030426847588376|0.00018803796380808537|0.9947815239429475"><span class="ARG0">The Board</span> <span class="ARGM-MOD">shall</span> <span class="V">report</span> <span class="ARGM-TMP">yearly</span> <span class="ARG2">to the Commission</span> <span class="ARG1">on the appropriateness of the allocation laid down in paragraph 1 , in the light of the changing composition of the two categories of entities and groups</span> .</p>

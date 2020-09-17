@@ -75,10 +75,10 @@ def update_class(arg, new_class):
 print("Loading the various models...")
 
 # load the srl model
-srl = Predictor.from_path("./bert-base-srl-2019.06.17.tar.gz")
+srl = Predictor.from_path("../bert-base-srl-2019.06.17.tar.gz")
 
 # load the spacy frequency model
-nlp = spacy.load("./spacy-textcat")
+nlp = spacy.load("../spacy-textcat")
 
 
 

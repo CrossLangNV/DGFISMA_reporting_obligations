@@ -1,0 +1,134 @@
+<!doctype html>
+<style>
+
+    p {
+        margin: 0.75em 0px;
+        line-height: 2em;
+        white-space: nowrap;
+    }
+
+    span {
+        border: 2px solid currentColor;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    span {
+        background: lightblue;
+        color: royalblue;
+    }
+
+    .V {
+        background: yellow;
+        color: orangered;
+        font-weight: bold;
+    }
+
+    .ARG0,.ARG1,.ARG2,.C-ARG1 {
+        color: black;
+        background: white;
+    }
+
+    .ARGM-TMP {
+        color: green;
+        background: lightgreen;
+    }
+
+    .ARGM-NEG {
+        color: pink;
+        background: darkred;
+        border-color: darkred;
+    }
+
+    .PUNCT {
+        color: silver;
+        background: white;
+        border: none; padding: 0;
+    }
+
+    .ARG2 {
+        border-style: dotted;
+    }
+
+    .ARG1, .C-ARG1 {
+        color: white;
+        background: black;
+        border-color: black;
+        border-style: solid;
+    }
+
+    .ARG3, .ARGM-PRP, .ARGM-PRD, .ARGM-PNC {
+        color: white;
+        background: royalblue;
+        border-color: royalblue;
+        border-style: solid;
+    }
+
+    .updated-tag {
+        outline: 3px solid fuchsia;
+        outline-offset: 2px;
+    }
+
+    p[data-frequency-class="1"] {
+        opacity: 0.15;
+    }
+
+    p[data-frequency-might-be-3="true"]::before {
+        content: "♺";
+        border: 7px solid royalblue;
+        margin-right: 5px;
+        border-radius: 5px;
+        background: royalblue;
+        color: white;
+    }
+    p[data-frequency-class="3"]::before {
+        border-color: red;
+        background: red;
+        color: yellow;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+        font-family: sans-serif;
+        font-size: 12px;
+        color: silver;
+        font-weight: bold;
+        margin: 5px 0px;
+        border-left: 3px solid silver;
+        padding-left: 3px;
+    }
+    h2 { border-left-width: 3px; }
+    h2 { border-left-width: 6px; }
+    h3 { border-left-width: 9px; }
+    h4 { border-left-width: 12px; }
+    h5 { border-left-width: 15px; }
+    h6 { border-left-width: 18px; }
+    p + :not(p):not(h6) { margin-top: 45px; }
+
+    [data-old-text] {
+        outline: 4px dashed fuchsia;
+        outline-offset: 1px;
+        position: relative;
+    }
+    [TODO] {
+        outline: 4px dashed red;
+        outline-offset: 1px;
+    }
+
+    [data-old-text]:hover::before {
+        content: attr(data-old-text);
+        background: fuchsia;
+        color: white;
+        position: absolute; top: -2em;
+        padding: 1px 6px; border-radius: 4px;
+    }
+
+</style>
+
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="true" data-frequency-split="0.041251007467508316|0.7011293858289719|0.25761963524855674">Competent authorities may waive the condition set out in point ( d ) of paragraph 4 when Article 20(1)(b ) is applied . In that case additional objective criteria as set out in the delegated act referred to in Article 460 have to be met . <span class="ARGM-TMP">When such higher inflow is permitted to be applied</span> , <span class="ARG0">the competent authorities</span> <span class="ARGM-MOD">shall</span> <span class="V">inform</span> <span class="ARG2" data-update-stack="/notebook/nas-trainings/arne/DGFISMA/reporting_obligations/code/DGFISMA_reporting_obligations/src/reporting_obligations.py:360">EBA</span> <span class="ARG1" data-update-stack="/notebook/nas-trainings/arne/DGFISMA/reporting_obligations/code/DGFISMA_reporting_obligations/src/reporting_obligations.py:362">about the result of the process referred to in Article 20(1)(b )</span> . Fulfilment of the conditions for such higher inflows shall be regularly reviewed by the competent authorities .</p>
+<p data-frequency-class="3" data-frequency-could-be-1="false" data-frequency-could-be-2="false" data-frequency-could-be-3="true" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="true" data-frequency-split="0.003947803931077942|0.34864878952503203|0.6474034041166306">Competent authorities may waive the condition set out in point ( d ) of paragraph 4 when Article 20(1)(b ) is applied . In that case additional objective criteria as set out in the delegated act referred to in Article 460 have to be met . When such higher inflow is permitted to be applied , the competent authorities shall inform EBA about the result of the process referred to in Article 20(1)(b ) . <span class="ARG1">Fulfilment of the conditions for such higher inflows</span> <span class="ARGM-MOD">shall</span> be <span class="ARGM-TMP" data-update-stack="/notebook/nas-trainings/arne/DGFISMA/reporting_obligations/code/DGFISMA_reporting_obligations/src/reporting_obligations.py:414">regularly</span> <span class="V">reviewed</span> <span class="ARG0">by the competent authorities</span> .</p>
+<p data-frequency-class="1" data-frequency-could-be-1="true" data-frequency-could-be-2="false" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="false" data-frequency-might-be-3="false" data-frequency-split="0.9998475036025049|0.0001116087380432873|4.089976706666221e-05"><span class="ARG0">EBA</span> <span class="ARGM-MOD">shall</span> <span class="V">submit</span> <span class="ARG1">those draft regulatory technical standards</span> <span class="ARG2">to the Commission</span> <span class="ARGM-TMP">by 1 January 2015</span> .</p>
+<p data-frequency-class="1" data-frequency-could-be-1="true" data-frequency-could-be-2="false" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.7954082429409027|0.2006009064614773|0.003990896826144308"><span class="ARG0">Institutions</span> <span class="ARGM-MOD">shall</span> <span class="ARGM-NEG">not</span> <span class="V">report</span> <span class="ARG1">inflows from any of the liquid assets reported in accordance with Article 416 other than payments due on the assets that are not reflected in the market value of the asset</span> .</p>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.019838490383699538|0.8749605715274812|0.10520097240805626"><span class="ARG0">Institutions</span> <span class="ARGM-MOD">shall</span> <span class="ARGM-NEG">not</span> <span class="V">report</span> <span class="ARG1">inflows from any new obligations entered into</span> .</p>
+<h2>TITLE III</h2>
+<h6>Article 427</h6>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.020463182621824675|0.9452603191137314|0.03427645036367721"><span class="ARG0">Institutions</span> <span class="ARGM-MOD">shall</span> <span class="V">report</span> <span class="ARG2">to the competent authorities</span> , <span class="ARGM-MNR">in accordance with the reporting requirements set out in Article 415(1 ) and the uniform reporting formats referred to in Article 415(3 )</span> , <span class="ARG1">the following items and their components ❮the following own funds, after deductions have been applied, where appropriate ❬tier 1 capital instruments ‖ and/or tier 2 capital instruments ‖ and/or other preferred shares and capital instruments in excess of Tier 2 allowable amount having an effective maturity of one year or greater❭ ‖ the following liabilities not included in point (a) ❬retail deposits that qualify for the treatment set out in Article 421(1) ‖ and/or retail deposits that qualify for the treatment set out in Article 421(2) ‖ and/or deposits that qualify for the treatment set out in Article 422 (3) and (4) ‖ and/or of the deposits referred to in point (iii), those that are subject to a deposit guarantee scheme in accordance with Directive 94/19/EC or an equivalent deposit guarantee scheme in a third country deposit guarantees within the terms of Article 421(2) ‖ and/or of the deposits referred to in point (iii), those that fall under point (b) of Article 422(3) ‖ and/or of the deposits referred to in point (iii), those that fall under point (d) of Article 422(3) ‖ and/or amounts deposited not falling under point (i), (ii) or (iii) if they are not deposited by financial customers ‖ and/or all funding obtained from financial customers ‖ and/or separately for amounts falling under points (vii) and (viii) respectively, funding from secured lending and capital market-driven transactions as defined in point (3) of Article 192 ⟨collateralised by assets that would qualify as liquid assets in accordance with Article 416 ‖ and/or collateralised by any other assets⟩ ‖ and/or liabilities resulting from securities issued qualifying for the treatment set out in Article 129(4) or (5) or as referred to in Article 52(4) of Directive 2009/65/EC ‖ and/or the following other liabilities resulting from securities issued that do not fall under point (a) ⟨liabilities resulting from securities issued with an effective maturity of one year or greater ‖ and/or liabilities resulting from securities issued with an effective maturity of less than one year⟩ ‖ and/or any other liabilities❭❯</span> <span class="ARGM-PRP">in order to allow an assessment of the availability of stable funding</span></p>

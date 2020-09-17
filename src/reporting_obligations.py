@@ -4,9 +4,9 @@ import spacy
 from xml.dom.minidom import parseString
 from allennlp.predictors.predictor import Predictor
 
-from keywords_nouns_verbs import  ALL_ARG2_KEYWORDS, PLURAL_OR_NODET_ARG2_KEYWORDS, INTERESTING_VERBS, OBLIGATION_VERBS, INTERESTING_NOUNS, OBLIGATION_NOUNS, INTERESTING_NOUNS_VALID_VERBS_DIRECT, INTERESTING_NOUNS_VALID_VERBS_SUBJ, PENDING_LOCATION_TYPES
+from src.keywords_nouns_verbs import ALL_ARG2_KEYWORDS, PLURAL_OR_NODET_ARG2_KEYWORDS, INTERESTING_VERBS, OBLIGATION_VERBS, INTERESTING_NOUNS, OBLIGATION_NOUNS, INTERESTING_NOUNS_VALID_VERBS_DIRECT, INTERESTING_NOUNS_VALID_VERBS_SUBJ, PENDING_LOCATION_TYPES
 
-from utils import looks_like_arg0, looks_like_arg2, match_class_in_list, match_class , update_class, text_of
+from src.utils import looks_like_arg0, looks_like_arg2, match_class_in_list, match_class , update_class, text_of
 
 class ReportingObligationsFinder():
     
@@ -23,7 +23,7 @@ class ReportingObligationsFinder():
             self.sentences=list( sentences )
             
         self.last_known_subject= ''
-        #store the current location in the file
+        #remember the current location ( i.e. part/annex/title/chapter/... )
         self.pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
         
         
@@ -257,7 +257,7 @@ class ReportingObligationsFinder():
 
     
     @staticmethod
-    def convert_to_xml_and_fix_tags_hand_crafted( verb_tuple  ):
+    def convert_to_xml_and_fix_tags_hand_crafted( verb_tuple, subsentence  ):
         
         '''
         Input is a tuple (dict, boolean, boolean) (element from the list generated via staticmethod filter_data_to_relevant_verbs). dict is converted to xml. Some tags are fixed using hand crafted rules.
@@ -280,9 +280,8 @@ class ReportingObligationsFinder():
         '''
         next line adds context to the input sentence, it replaces <span class="ARG2">to the commision following ... </span> with 
         <span class="ARG2">to the commision following ... < input_sentence_following_data  >  </span> .
-        As it complicates integration with UIMA, and because it seems to be added only for visual purposes (this part is not parsed), therefore we commented it..
         '''
-        #if len(input_sentence_following_data) > 0: srl_html_output = re.sub(r'(<span[^>]*>[^<]* following\b[^<]*)(</span>)', lambda m: m.group(1)+' '+input_sentence_following_data+m.group(2), srl_html_output)
+        if len(subsentence) > 0: srl_html_output = re.sub(r'(<span[^>]*>[^<]* following\b[^<]*)(</span>)', lambda m: m.group(1)+' '+subsentence+m.group(2), srl_html_output)
         srl_html_output = re.sub(r'<span[^>]+>([,.;])</span>', r'\1', srl_html_output)
         srl_html_output = re.sub(r'( ?[,.;])</span>', r'</span>\1', srl_html_output)
         srl_html_output = re.sub(r'(?<=[a-z][a-z][a-z])( ?[)])</span>', r'</span>\1', srl_html_output)
@@ -645,11 +644,65 @@ class ReportingObligationsFinder():
 
         return srl_dom_output
     
+    def process_sentence( self, sentence, subsentence, main_sentence=True ):
+        
+        '''
+        Method processes a sentence, either a main sentence or a subsentence (in between ❮  ❯, see transform.py ).
+        :param sentence: String. Sentence to process
+        :param subsentence: String. Subsentence, i.e. sentence in between ❮  ❯. 
+        :param main_sentence: Boolean. If it is main sentence or subsentence. If it is subsentence, then we do not update the last known subject and location.
+        :return: List.
+        '''
+        
+        list_xml=[]
+        
+        if main_sentence:
+        
+            self.update_pending_location_names( sentence )
+
+            self.update_last_known_subject( sentence )
+
+        sentence=self.check_if_interesting_sentence_and_process_via_regexes( sentence )
+
+        if not sentence: #if not an interesting sentence (i.e., it is a definition, it does not contain interesting verbs), then continue
+            return []
+
+        #parse the sentence with ALLEN_NLP model:
+        parsed_sentence=self.parse_sentence( sentence )
+
+        verbs=self.filter_data_to_relevant_verbs( parsed_sentence )
+
+        #check if verbs is not empty:
+        if not verbs:
+            return []
+
+        for verb in verbs:
+
+            is_relevant_case=verb[2]
+
+            if not is_relevant_case:
+                continue
+
+            #if relevant verb, and if it is the first interesting verb in this section/paragraph, ..., then save the location (section/paragraph) as an xml element in list_xml:
+            list_location_xml=self.get_and_flush_pending_location_names()
+            list_xml+=list_location_xml
+
+            srl_dom_output=self.convert_to_xml_and_fix_tags_hand_crafted(  verb, subsentence  )
+
+            #process the paragraph (sentence) and 'verb' with spacy model
+            srl_dom_output=self.predict_obligation_frequency( sentence, srl_dom_output  )
+
+            srl_dom_output=self.co_reference_resolution(  srl_dom_output  )
+
+            list_xml.append( srl_dom_output )
+    
+        return list_xml
     
     def process_sentences( self, allen_nlp_path , spacy_path ):
         
         '''
-        Method iterates over self.sentences. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using bunch of hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned.
+        Method iterates over self.sentences. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned. 
+        Subsentences, i.e. sentence in between ❮  ❯ are subsentences, and if they contain a reporting obligation, they are also parsed.
         :param allen_nlp_path: String. Path to allen_nlp model. 
         :param spacy_path: String. Path to spacy model. 
         :return: List.
@@ -663,45 +716,21 @@ class ReportingObligationsFinder():
         for sentence in self.sentences:
             
             sentence=sentence.rstrip( '\r\n' )
+            subsentence = re.sub(r'(^[^❮]+|[^❯]+$)',r'', sentence)  #finds everything between " ❮ ❯ " ==>the main sentence
+            if len(subsentence) > 0: sentence = sentence.replace(subsentence, '', 1)  #remove everything inside " ❮ ❯ " from the string
+    
+            #process the main_sentence
+            list_xml_sentence=self.process_sentence( sentence, subsentence, True )
             
-            self.update_pending_location_names( sentence )
+            list_xml+=list_xml_sentence
             
-            self.update_last_known_subject( sentence )
+            #process subsentence:
             
-            sentence=self.check_if_interesting_sentence_and_process_via_regexes( sentence )
-            
-            if not sentence: #if not an interesting sentence (i.e., it is a definition, it does not contain interesting verbs), then continue
-                continue
-            
-            #parse the sentence with ALLEN_NLP model:
-            parsed_sentence=self.parse_sentence( sentence )
-
-            verbs=self.filter_data_to_relevant_verbs( parsed_sentence )
-        
-            #should check if verbs is not empty...
-        
-            if not verbs:
-                continue
-                    
-            for verb in verbs:
-                
-                is_relevant_case=verb[2]
-                
-                if not is_relevant_case:
-                    continue
-                    
-                #if relevant verb, and if it is the first interesting verb in this section/paragraph, ..., then save the section/paragraph as an xml element in list_xml:
-                list_location_xml=self.get_and_flush_pending_location_names()
-                list_xml+=list_location_xml
-                                    
-                srl_dom_output=self.convert_to_xml_and_fix_tags_hand_crafted(  verb  )
-                
-                #process the paragraph (sentence) and 'verb' with spacy model
-                srl_dom_output=self.predict_obligation_frequency( sentence, srl_dom_output  )
-                
-                srl_dom_output=self.co_reference_resolution(  srl_dom_output  )
-
-                list_xml.append( srl_dom_output )
+            if " shall " in subsentence:
+                list_subsentences = re.sub(r' ‖ and/or ', r' and/or ', subsentence).lstrip('❮').rstrip('❯').split(' ‖ ')
+                for item_subsentence in list_subsentences:
+                    list_xml_subsentence=self.process_sentence( item_subsentence, '', False )
+                    list_xml+=list_xml_subsentence
                 
         return list_xml
     
