@@ -11,16 +11,22 @@ When this is done, you need to download the models:
 2. download `spacy-textcat.zip` from the latest github release
 3. unzip `spacy-textcat.zip` (you should have a `sapcy-textcat` folder as a result)
 
-See notebooks/Test_code.ipynb, for an example on how to use the code. Basically, given a List of Strings (sentences), one should do the following:
+See notebooks/test_transform_RO.ipynb, for an example on how to use the code. Basically, given a Cas object (cas) with paragraph annotations one should do the following:
 
-*from reporting_obligations import ReportingObligationsFinder \
-reporting_obligations_finder = ReportingObligationsFinder( sentences= sentences ) \
-list_xml=reporting_obligations_finder.process_sentences( ALLEN_NLP_PATH, SPACY_PATH ) \
+*from src.transform import ListTransformer \
+from src.reporting_obligations import ReportingObligationsFinder \
+transformer=ListTransformer( cas )
+transformer.add_reporting_obligation_view( OldSofaID='html2textView', NewSofaID = 'ReportingObligationView'  )
+sentences=cas.get_view( "ReportingObligationView" ).sofa_string
+reporting_obligations_finder = ReportingObligationsFinder( sentences = sentences.split( "\n" ) )
+list_xml=reporting_obligations_finder.process_sentences( ALLEN_NLP_PATH, SPACY_PATH )
 reporting_obligations_finder.print_to_html( list_xml, TEMPLATE_PATH, OUTPUT_PATH )*
 
-*reporting_obligations.py* is a refactoring of *extract-relation-info.py*, and in this way replaces it. Only difference is that the class ReportingObligationsFinder does not take care of sublines (i.e. processing of lists, or in original code: ❮ ❯ ), because paragraph detection (i.e. lists) will eventually be done using UIMA/CAS. It should be further discussed how we can converge here.  
+*transform.py* is a refactoring of *process-article-lists.py*, but now it uses paragraph annotations in the cas, obtained via https://github.com/CrossLangNV/DGFISMA_paragraph_detection for transformation of sentences/lists/sublists.
 
-Still, a human-friendly *.html* file is created.
+*reporting_obligations.py* is a refactoring of *extract-relation-info.py*.
+
+A human-friendly *.html* file is created.
 
 ----------------------------------
 
