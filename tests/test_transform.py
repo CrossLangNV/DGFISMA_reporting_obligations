@@ -33,9 +33,9 @@ def test_list_transformer( get_path_json, get_path_sofa, get_path_typesystem ):
     
     transformer=ListTransformer( cas )
     
-    transformer.add_reporting_obligation_view( OldSofaID = 'html2textView', NewSofaID = 'ReportingObligationView' )
+    transformer.add_reporting_obligation_view( OldSofaID = 'html2textView', NewSofaID = 'ListView' )
     
-    sofa_reporting_obligations=cas.get_view( "ReportingObligationView" ).sofa_string
+    sofa_reporting_obligations=cas.get_view( "ListView" ).sofa_string
     
     sofa_reporting_obligations_ok=open( get_path_sofa , 'r'   ).read() 
     

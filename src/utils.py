@@ -24,6 +24,7 @@ class SeekableIterator:
 
 #helper functions
 import inspect
+import re
 from src.keywords_nouns_verbs import ALL_ARG2_KEYWORDS
 
 
@@ -58,50 +59,3 @@ def update_class(arg, new_class):
 
 def text_of(element):
     return str(element.firstChild.data)
-
-
-#some testing
-
-from bs4 import BeautifulSoup, Comment, Doctype
-import re
-
-def clean_html(  html_file  ):
-    
-    '''
-    Function will find all text in the html, convert to a plain text (String), and add it to a List
-    
-    :param html_file: String containing a html file in plain text.
-    :return: List of Strings (sentences). 
-    '''
-    
-    page_content=BeautifulSoup( html_file, "html.parser")
-    
-    
-    #articles=[]
-    #article=[]
-    
-    sentences=[]
-    
-    
-    #remove the header:
-    [x.extract() for x in page_content.findAll('head')]
-
-    #remove the items of Doctype type:
-    for item in page_content:
-        if isinstance(item, Doctype):
-            item.extract()
-
-    #remove the comments
-    com = page_content.findAll(text=lambda text:isinstance(text, Comment))
-    [comment.extract() for comment in com]
-
-    for node in page_content.findAll('p'):
-        text = ''.join(node.findAll(text=True)) 
-        text = text.strip() 
-        text= text.replace( "\n", "" )
-        text= text.replace( "\xa0" , " ")
-               
-        if text:  
-            sentences.append( text )  
-             
-    return sentences

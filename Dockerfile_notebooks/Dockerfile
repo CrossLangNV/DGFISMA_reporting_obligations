@@ -4,10 +4,7 @@ FROM ubuntu:18.04
 
 MAINTAINER arne <arnedefauw@gmail.com>
 
-ARG BERT_PATH
-ARG SPACY_PATH
-ARG TEMPLATE_PATH
-ARG TYPESYSTEM_PATH
+ARG MODEL_DIR
 
 # Install some basic utilities
 RUN apt-get update && apt-get install -y \
@@ -45,13 +42,11 @@ RUN pip install Cython
 
 RUN pip install docutils==0.15.0 spacy==2.1.9 cloudpickle==1.3.0 torchtext==0.5.0 scikit-learn==0.20.0 scipy==1.4.1 allennlp==0.9.0 bs4==0.0.1 dkpro-cassis==0.3.0 pexpect pytest==6.0.2 ipython jupyter jupyterlab
 
-WORKDIR /work
-COPY app.py /work
-COPY src/*.py /work/src/
 
-COPY $BERT_PATH /work/models/bert_models/bert-base.tar.gz
-COPY $SPACY_PATH /work/models/spacy_models/spacy-textcat
-COPY $TEMPLATE_PATH /work/templates/out.html.template
-COPY $TYPESYSTEM_PATH /work/typesystems/typesystem.xml
+EXPOSE 8888
 
-CMD python /work/app.py
+VOLUME /notebook
+WORKDIR /notebook
+
+CMD ["jupyter", "notebook", "--no-browser", "--allow-root", "--ip='0.0.0.0'"]
+

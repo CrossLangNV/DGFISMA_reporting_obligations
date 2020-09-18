@@ -737,7 +737,7 @@ class ReportingObligationsFinder():
                 
         return list_xml
     
-    def add_xml_to_cas( self , list_xml:list , ROSofaID: str='ReportingObligationsView' ):
+    def add_xml_to_cas( self , list_xml:list, template_path: str , ROSofaID: str='ReportingObligationsView' ):
         
         self.cas.create_view(ROSofaID)
         
@@ -745,10 +745,12 @@ class ReportingObligationsFinder():
         for xml in list_xml:
             list_xml_string.append(xml.lastChild.toxml())
                 
-        self.cas.get_view( ROSofaID ).sofa_string = "\n".join( list_xml_string )
+        html_template=open(  template_path ).read()
+                
+        self.cas.get_view( ROSofaID ).sofa_string=html_template + "\n".join( list_xml_string )
         
     @staticmethod
-    def print_to_html( list_xml , template_path, output_path  ):
+    def print_to_html( list_xml:list , template_path:str, output_path:str  ):
         
         '''
         Method prints xml element from a list of xml elements (list_xml) to a file.

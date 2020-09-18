@@ -19,7 +19,7 @@ transformer=ListTransformer( cas ) \
 transformer.add_reporting_obligation_view( OldSofaID='html2textView', NewSofaID = 'ListView'  ) \
 reporting_obligations_finder = ReportingObligationsFinder( cas, ALLEN_NLP_PATH, SPACY_PATH  ) \
 list_xml=reporting_obligations_finder.process_sentences( ListSofaID='ListView'  ) \
-reporting_obligations_finder.add_xml_to_cas( list_xml, ROSofaID='ReportingObligationsView' ) \
+reporting_obligations_finder.add_xml_to_cas( list_xml, TEMPLATE_PATH, ROSofaID='ReportingObligationsView' ) \
 reporting_obligations_finder.print_to_html( list_xml, TEMPLATE_PATH, OUTPUT_PATH )*
 
 

@@ -2,5 +2,6 @@
 /spacy-textcat/
 /spacy-textcat.zip
 /bert-base-srl-*.tar.gz
+/tests/test_files/models/
 .ipynb_checkpoints/
 __pycache__/

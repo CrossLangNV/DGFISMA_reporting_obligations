@@ -18,4 +18,4 @@ def get_path_pickle( request ):
 
 @pytest.fixture(scope='function')
 def get_path_sofa( request ):
-    return os.path.join( FIXTURE_DIR , "sofa_reporting_obligations", request.param )
+    return os.path.join( FIXTURE_DIR , "sofa_listview", request.param )
