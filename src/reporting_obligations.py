@@ -19,12 +19,7 @@ class ReportingObligationsFinder():
         :param sentences: List. List of Strings (i.e. sentences).
         '''
         
-        self.cas=cas #maybe add isinstance check
-        
-        #if sentences is None:
-        #    self.sentences=[]
-        #else:
-        #    self.sentences=list( sentences )
+        self.cas=cas #TO DO, add some checks
             
         self.allen_nlp_path=allen_nlp_path
         self.spacy_path=spacy_path
