@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Tuple
 import spacy
 from xml.dom.minidom import parseString
 from allennlp.predictors.predictor import Predictor
@@ -12,23 +13,25 @@ from src.utils import looks_like_arg0, looks_like_arg2, match_class_in_list, mat
 
 class ReportingObligationsFinder():
     
-    def __init__( self, cas:Cas , allen_nlp_path:str , spacy_path:str  ):
+    def __init__( self, cas:Cas , bert_path:str , spacy_path:str  ):
         
         '''
         Find reporting obligations in text. See method process_sentences.
         :param sentences: List. List of Strings (i.e. sentences).
+        :param bert_path: String. Path to Bert based parser.
+        :param spacy_path: String. Path to spacy nlp model.
         '''
         
-        self.cas=cas #TO DO, add some checks
+        self.cas=cas
             
-        self.allen_nlp_path=allen_nlp_path
+        self.bert_path=bert_path
         self.spacy_path=spacy_path
         self.last_known_subject= ''
         #remember the current location ( i.e. part/annex/title/chapter/... )
         self.pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
         
         
-    def update_pending_location_names( self, input_sentence ):
+    def update_pending_location_names( self, input_sentence:str ):
         
         '''
         Given a sentence, the method updates self.pending_location_names (i.e. (part, annex), title, chapter, section, sub-section, article). If a new title, chapter,... is found, self.last_known_subject is reset.
@@ -62,7 +65,7 @@ class ReportingObligationsFinder():
         return list_location_xml
     
        
-    def update_last_known_subject(self, input_sentence):
+    def update_last_known_subject(self, input_sentence:str):
         
         '''
         Given a sentence, method updates self.last_known_subject using various regexes.
@@ -96,13 +99,14 @@ class ReportingObligationsFinder():
         :return: None.
         '''
     
-        print( f"loading AllenNLP predictor from {self.allen_nlp_path}" )
-        self.srl = Predictor.from_path( self.allen_nlp_path )
+        print( f"loading AllenNLP predictor from {self.bert_path}" )
+        self.srl = Predictor.from_path( self.bert_path )
     
-    def parse_sentence(  self, input_sentence ):
+    def parse_sentence(  self, input_sentence:str ) -> dict:
         
         '''
         Given a sentence, method parses the sentences using AllenNLP parser (self.srl) 
+        :param input_sentence: String.
         :return parsed_sentence: dict.
         '''
     
@@ -124,7 +128,7 @@ class ReportingObligationsFinder():
         
         
     @staticmethod
-    def check_if_interesting_sentence_and_process_via_regexes( input_sentence ):
+    def check_if_interesting_sentence_and_process_via_regexes( input_sentence:str ) -> str:
         
         '''
         Method checks if the input_sentence is a potential reporting obligation. If yes, the sentence is cleaned and returned, if no, it returns None.
@@ -189,7 +193,7 @@ class ReportingObligationsFinder():
     
     
     @staticmethod
-    def filter_data_to_relevant_verbs(  parsed_sentence ):
+    def filter_data_to_relevant_verbs(  parsed_sentence: dict ) -> list:
         
         '''
         Method iterates over all the 'verbs' from a sentence parsed with AllenNLP model. Next, it checks if the verb is interesting or not, using hand crafted rules. It returns a List containing Tuples of len==3. The Tuples contain the verb (dict), a boolean indicating if it is 'relevant_case_based_on_verb', and a boolean indicating if it is a 'relevant_case'.   
@@ -258,11 +262,12 @@ class ReportingObligationsFinder():
 
     
     @staticmethod
-    def convert_to_xml_and_fix_tags_hand_crafted( verb_tuple, subsentence  ):
+    def convert_to_xml_and_fix_tags_hand_crafted( verb_tuple: Tuple[ dict, bool, bool ] ,  subsentence: str  ):
         
         '''
         Input is a tuple (dict, boolean, boolean) (element from the list generated via staticmethod filter_data_to_relevant_verbs). dict is converted to xml. Some tags are fixed using hand crafted rules.
         :param verb_tuple: Tuple.
+        :subsentence: str. The subsentence, i.e. enumeration/list, see method process_sentences and src.transform.
         :return: xml.dom.minidom.Document. 
         '''
         
@@ -490,7 +495,7 @@ class ReportingObligationsFinder():
         return srl_dom_output
     
     
-    def predict_obligation_frequency( self, input_sentence , srl_dom_output  ):
+    def predict_obligation_frequency( self, input_sentence:str , srl_dom_output  ):
         
         '''
         Input is an xml element, and the sentence the xml element (verb+context) was part of. Method calculates the obligation frequence using spacy model (self.nlp), and accordingly adds tags to the xml element.
@@ -645,7 +650,7 @@ class ReportingObligationsFinder():
 
         return srl_dom_output
     
-    def process_sentence( self, sentence, subsentence, main_sentence=True ):
+    def process_sentence( self, sentence:str, subsentence:str, main_sentence: bool=True ):
         
         '''
         Method processes a sentence, either a main sentence or a subsentence (in between ❮  ❯, see transform.py ).
@@ -699,12 +704,11 @@ class ReportingObligationsFinder():
     
         return list_xml
     
-    def process_sentences( self, ListSofaID: str='ListView'  ):
+    def process_sentences( self, ListSofaID: str='ListView'  ) ->list:
         
         '''
         Method iterates over self.sentences. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned. 
         Subsentences, i.e. sentence in between ❮  ❯ are subsentences, and if they contain a reporting obligation, they are also parsed.
-        :param allen_nlp_path: String. Path to allen_nlp model. 
         :param spacy_path: String. Path to spacy model. 
         :return: List.
         '''
@@ -712,7 +716,7 @@ class ReportingObligationsFinder():
         self.load_parser()
         self.load_spacy_model()
 
-        list_xml=[]
+        self._list_xml=[]
 
         sentences=self.cas.get_view( ListSofaID ).sofa_string.split( "\n" )
         
@@ -725,7 +729,7 @@ class ReportingObligationsFinder():
             #process the main_sentence
             list_xml_sentence=self.process_sentence( sentence, subsentence, True )
             
-            list_xml+=list_xml_sentence
+            self._list_xml+=list_xml_sentence
             
             #process subsentence:
             
@@ -733,28 +737,33 @@ class ReportingObligationsFinder():
                 list_subsentences = re.sub(r' ‖ and/or ', r' and/or ', subsentence).lstrip('❮').rstrip('❯').split(' ‖ ')
                 for item_subsentence in list_subsentences:
                     list_xml_subsentence=self.process_sentence( item_subsentence, '', False )
-                    list_xml+=list_xml_subsentence
+                    self._list_xml+=list_xml_subsentence
                 
-        return list_xml
+        return self._list_xml
     
-    def add_xml_to_cas( self , list_xml:list, template_path: str , ROSofaID: str='ReportingObligationsView' ):
+    def add_xml_to_cas( self , template_path: str , ROSofaID: str='ReportingObligationsView' ):
+        
+        '''
+        Method creates the view ROSofaID, and adds the xml elements from the list of xml's (xml.dom.minidom.Document) elements as sofa to the view (html), using template_path.
+        :param template_path: String. Path to html template.
+        :param ROSofaID: String. Name of the view.
+        :return: None.
+        '''
         
         self.cas.create_view(ROSofaID)
         
         list_xml_string=[]
-        for xml in list_xml:
+        for xml in self._list_xml:
             list_xml_string.append(xml.lastChild.toxml())
                 
         html_template=open(  template_path ).read()
                 
         self.cas.get_view( ROSofaID ).sofa_string=html_template + "\n".join( list_xml_string )
         
-    @staticmethod
-    def print_to_html( list_xml:list , template_path:str, output_path:str  ):
+    def print_to_html( self, template_path:str, output_path:str):
         
         '''
-        Method prints xml element from a list of xml elements (list_xml) to a file.
-        :param list_xml: List. List of xml elements (xml.dom.minidom.Document). 
+        Method prints xml element from a list of xml's (xml.dom.minidom.Document) elements (self._list_xml, see method process_sentences) to html, using template_path.
         :param template_path: String. Path to html template. 
         :param output_path: String. Output path. 
         :return: None.
@@ -764,8 +773,12 @@ class ReportingObligationsFinder():
 
         print( f"Writing output to {output_path} using {template_path} as html template"  )
 
+        list_xml_string=[]
+        for xml in self._list_xml:
+            list_xml_string.append(xml.lastChild.toxml())
+        
+        html_template=open(  template_path ).read()
+        
         with open( output_path , "w"  ) as f:
-            f.write( open(  template_path ).read() )
-            for xml in list_xml:
-                f.write( f"{  xml.lastChild.toxml() }\n" )
-            
+            f.write( html_template + "\n".join( list_xml_string )  )
+         

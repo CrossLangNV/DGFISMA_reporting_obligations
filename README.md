@@ -16,11 +16,11 @@ See notebooks/test_transform_RO.ipynb, for an example on how to use the code. Ba
 *from src.transform import ListTransformer \
 from src.reporting_obligations import ReportingObligationsFinder \
 transformer=ListTransformer( cas ) \
-transformer.add_reporting_obligation_view( OldSofaID='html2textView', NewSofaID = 'ListView'  ) \
+transformer.add_list_view( OldSofaID='html2textView', NewSofaID = 'ListView'  ) \
 reporting_obligations_finder = ReportingObligationsFinder( cas, ALLEN_NLP_PATH, SPACY_PATH  ) \
-list_xml=reporting_obligations_finder.process_sentences( ListSofaID='ListView'  ) \
-reporting_obligations_finder.add_xml_to_cas( list_xml, TEMPLATE_PATH, ROSofaID='ReportingObligationsView' ) \
-reporting_obligations_finder.print_to_html( list_xml, TEMPLATE_PATH, OUTPUT_PATH )*
+reporting_obligations_finder.process_sentences( ListSofaID='ListView'  ) \
+reporting_obligations_finder.add_xml_to_cas( TEMPLATE_PATH, ROSofaID='ReportingObligationsView' ) \
+reporting_obligations_finder.print_to_html(  TEMPLATE_PATH, OUTPUT_PATH )*
 
 
 *transform.py* is a refactoring of *process-article-lists.py*, but now it uses paragraph annotations in the cas, obtained via https://github.com/CrossLangNV/DGFISMA_paragraph_detection for transformation of sentences/lists/sublists. The OldSofaID should contain these paragraph annotations. The ListTransformer will add a ListView to the cas. 
@@ -28,6 +28,9 @@ reporting_obligations_finder.print_to_html( list_xml, TEMPLATE_PATH, OUTPUT_PATH
 *reporting_obligations.py* is a refactoring of *extract-relation-info.py*. It will use the sentences in the ListSofaID.
 
 A human-friendly *.html* file is created.
+
+Unit tests will pass when using bert and spacy models from first github release.
+https://github.com/CrossLangNV/DGFISMA_reporting_obligations/releases/tag/v1.0
 
 ----------------------------------
 

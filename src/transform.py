@@ -12,13 +12,13 @@ class ListTransformer():
     def __init__( self, cas: Cas ):
         
         '''
-        Add a reporting obligations view to the cas.
+        Add a list view to the cas.
         :param cas: Cas. Cas object (mutable object).
         '''
         
         self.cas=cas
         
-    def add_reporting_obligation_view( self , OldSofaID: str, NewSofaID: str='ListView', \
+    def add_list_view( self , OldSofaID: str, NewSofaID: str='ListView', \
                                       value_between_tagtype: str="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
                                       paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph" ):
         
@@ -26,7 +26,12 @@ class ListTransformer():
         The method will get all value_between_tagtype (text in between tags), detect all lists (enumeration),
         and use a set of hand-crafted rules (function handle_root_list called by function transform_lines) to transform these enumeration to 
         sentences using the function transform_lines.
-        The transformed sentences are then added to the cas. 
+        The transformed sentences are then added to the cas.
+        :param OldSofaID: String. Name of the old sofa.
+        :param NewSofaID: String. Name of the new sofa.
+        :param value_between_tagtype: String. 
+        :param paragraph_type: String.
+        :return: None. 
         '''
         
         value_between_tagtype_generator=self.cas.get_view( OldSofaID ).select( value_between_tagtype )        
@@ -56,6 +61,13 @@ def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_gene
     [->p  new_root
     [->p  new_root
     ->p]]
+    :param cas: Cas.
+    :param SofaID.
+    :param value_between_tagtype_seekable_generator. SeekableIterator object.
+    :param root_paragraph. The current paragraph.
+    :param paragraph_type: String.
+    :param end: Int. End index of the paragraph.
+    :return: List. Nested list.
     '''
 
     lines=[]
@@ -116,6 +128,8 @@ def transform_lines( lines: list  ) -> list:
     '''
     Function to transform the 'nested' lists produced by the function get_other_lines to merged sentences through folding of sublists (via function fold_sublist)
     and via hand crafted rules (via function handle_root_list)
+    :param lines: list.
+    :return: List.
     '''
 
     sentencizer = English()
@@ -207,10 +221,15 @@ def fold_sublist( sublist: list, open_paren='❬', close_paren='❭'  )-> str:
     return (start_enumeration + ' '  + open_paren +  ' ‖ and/or '.join( other_lines ) + close_paren).strip()
 
 
-def handle_root_list( main_line , main_sentences: list, last_sentence: str, other_lines: list):
+def handle_root_list( main_line:str , main_sentences: list, last_sentence: str, other_lines: list) -> str:
         
     '''
-    Hand crafted rules provided by Francois Remy ( Ugent, Imec) to transform enumerations for handling of reporting obligations.
+    Hand crafted rules provided by François Remy ( Ugent, Imec) to transform enumerations for processing of reporting obligations.
+    :param main_line: String. The current line.
+    :param main_sentences: List. The main line split with spacy sentencizer.
+    :param last_sentence: String. Processed last element of main_sentences.
+    :param other_lines: List. The other lines (enumeration).
+    :return: String. Transformed sentence using hand crafted rules.
     '''
         
     # default choice of action

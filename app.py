@@ -50,13 +50,13 @@ def add_reporting_obligations():
         #List processing and add to cas:
         
         transformer=ListTransformer( cas )
-        transformer.add_reporting_obligation_view( OldSofaID='html2textView', NewSofaID = 'ListView' )
+        transformer.add_list_view( OldSofaID='html2textView', NewSofaID = 'ListView' )
 
         #Find reporting obligations and add to cas:
         
         reporting_obligations_finder = ReportingObligationsFinder( cas, BERT_PATH, SPACY_PATH )
-        list_xml=reporting_obligations_finder.process_sentences( ListSofaID='ListView'  )
-        reporting_obligations_finder.add_xml_to_cas( list_xml, TEMPLATE_PATH, ROSofaID='ReportingObligationsView' )
+        reporting_obligations_finder.process_sentences( ListSofaID='ListView'  )
+        reporting_obligations_finder.add_xml_to_cas( TEMPLATE_PATH, ROSofaID='ReportingObligationsView' )
                 
     else:
         print( f"content type { request.json[ 'content_type'] } not supported by paragraph annotation app" )   

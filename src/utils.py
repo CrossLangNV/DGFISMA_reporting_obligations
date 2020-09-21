@@ -54,7 +54,7 @@ def update_class(arg, new_class):
         arg.setAttribute('class', new_class)
         last_frame = inspect.getouterframes(inspect.currentframe())[1]
         last_frame_str = last_frame.filename + ':' + str(last_frame.lineno)
-        arg.setAttribute('data-update-stack', last_frame_str)
+        #arg.setAttribute('data-update-stack', last_frame_str)
         #print(">"+last_frame_str)
 
 def text_of(element):
