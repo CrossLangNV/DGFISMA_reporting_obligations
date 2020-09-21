@@ -1,15 +1,3 @@
-
-To use this project:
-
-1. clone this repository
-2. install dependencies 'torch' (1.4.0), 'spacy' (2.1.9), 'allennlp' (0.9.0). A dockerfile is also provided.
-3. follow the instructions below to download the models
-
-When this is done, you need to download the models:
-
-
-3. unzip `spacy-textcat.zip` (you should have a `sapcy-textcat` folder as a result)
-
 Instructions
 ------------
 
