@@ -7,29 +7,48 @@ To use this project:
 
 When this is done, you need to download the models:
 
-1. download `bert-base-srl-2019.06.17.tar.gz` from the latest github release
-2. download `spacy-textcat.zip` from the latest github release
+
 3. unzip `spacy-textcat.zip` (you should have a `sapcy-textcat` folder as a result)
 
-See notebooks/test_transform_RO.ipynb, for an example on how to use the code. Basically, given a Cas object (cas) with paragraph annotations one should do the following:
+Instructions
+------------
+
+use "dbuild.sh" to build the docker image <br />
+use "dcli.sh" to start a docker container
+
+Don't forget to:
+
+1) download BERT model `bert-base-srl-2019.06.17.tar.gz` from the latest github release
+
+2) download `spacy-textcat.zip` from the latest github release
+
+3) Set the path to the directory where the BERT/SPACY model is located in: https://github.com/CrossLangNV/DGFISMA_reporting_obligations/blob/dev/dbuild.sh 
+
+4) Set the path to the correct template (template provided here: tests/test_files/templates/out.html.template) in dbuild.sh ( e.g. https://github.com/CrossLangNV/DGFISMA_definition_extraction/blob/master/dbuild.sh )
+
+5) Set the path to the correct typesystem (provided: tests/test_files/typesystems/typesystem.xml) in dbuild.sh ( e.g. https://github.com/CrossLangNV/DGFISMA_definition_extraction/blob/master/dbuild.sh )
+
+
+
+See notebooks/test_transform_RO.ipynb, for an example on how to use the code. Basically, given a Cas object (cas) with paragraph annotations (obtained using https://github.com/CrossLangNV/DGFISMA_paragraph_detection) one should do the following:
 
 *from src.transform import ListTransformer \
 from src.reporting_obligations import ReportingObligationsFinder \
 transformer=ListTransformer( cas ) \
 transformer.add_list_view( OldSofaID='html2textView', NewSofaID = 'ListView'  ) \
-reporting_obligations_finder = ReportingObligationsFinder( cas, ALLEN_NLP_PATH, SPACY_PATH  ) \
+reporting_obligations_finder = ReportingObligationsFinder( cas, BERT_PATH, SPACY_PATH  ) \
 reporting_obligations_finder.process_sentences( ListSofaID='ListView'  ) \
 reporting_obligations_finder.add_xml_to_cas( TEMPLATE_PATH, ROSofaID='ReportingObligationsView' ) \
 reporting_obligations_finder.print_to_html(  TEMPLATE_PATH, OUTPUT_PATH )*
 
 
-*transform.py* is a refactoring of *process-article-lists.py*, but now it uses paragraph annotations in the cas, obtained via https://github.com/CrossLangNV/DGFISMA_paragraph_detection for transformation of sentences/lists/sublists. The OldSofaID should contain these paragraph annotations. The ListTransformer will add a ListView to the cas. 
+*transform.py* is a refactoring of *process-article-lists.py*, but now it uses paragraph annotations in the cas, obtained via https://github.com/CrossLangNV/DGFISMA_paragraph_detection for transformation of sentences/lists/sublists. The OldSofaID should contain these paragraph annotations. The ListTransformer will add a *ListView* to the cas, see *tests/test_files/sofa_listview* for examples. 
 
-*reporting_obligations.py* is a refactoring of *extract-relation-info.py*. It will use the sentences in the ListSofaID.
+*reporting_obligations.py* is a refactoring of *extract-relation-info.py*. It will use the sentences in the *ListView* (ListSofaID).
 
-A human-friendly *.html* file is created.
+A human-friendly *.html* file is created (and added to cas via method *.add_xml_to_cas*, or printed to a html file via *.print_to_html*).
 
-Unit tests will pass when using bert and spacy models from first github release.
+Unit tests (type pytest in command line from this directory) will pass when using bert and spacy models from first github release.
 https://github.com/CrossLangNV/DGFISMA_reporting_obligations/releases/tag/v1.0
 
 ----------------------------------
