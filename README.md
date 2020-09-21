@@ -29,6 +29,8 @@ Don't forget to:
 5) Set the path to the correct typesystem (provided: tests/test_files/typesystems/typesystem.xml) in dbuild.sh ( e.g. https://github.com/CrossLangNV/DGFISMA_definition_extraction/blob/master/dbuild.sh )
 
 
+Given a json with a *cas_content* (UIMA cas object encoded in base64) and *content_type* field (see tests/test_files/response_json_paragraph_annotations for examples), the POST request to */add_reporting_obligations* will return a json with the same fields, but now the *cas* object in *cas_content* will contain a *ReportingObligationsView*. See below for more details.
+
 
 See notebooks/test_transform_RO.ipynb, for an example on how to use the code. Basically, given a Cas object (cas) with paragraph annotations (obtained using https://github.com/CrossLangNV/DGFISMA_paragraph_detection) one should do the following:
 
