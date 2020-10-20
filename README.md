@@ -27,6 +27,31 @@ It's probably wise to add code to output a json or another format which can easi
 
 ----------------------------------
 
+The output of the SRL is formatted as a <a href="https://www.aclweb.org/anthology/J05-1004.pdf">PropBank frameset</a>, but has adopted unified conventions accross possible verbs.
+
+Here is a description of the "reporting obligation" frameset developped for this project:
+
+- `ARG0`: who needs to report
+- `ARG1`: what needs to be reported
+- `ARG2`: to who do we need to report it
+- `ARG3`: details about what needs to be reported
+
+In addition to that, modifier arguments follow the general Propbank conventions:
+
+- `ARGM-TMP`: time
+- `ARGM-LOC`: location
+- `ARGM-CAU`: cause
+- `ARGM-EXT`: extent
+- `ARGM-MNR`: manner
+- `ARGM-PNC`: purpose
+- `ARGM-ADV`: general purpose
+- `ARGM-DIR`: direction
+- `ARGM-NEG`: negation marker
+- `ARGM-MOD`: modal verb
+- `ARGM-DIS`: discourse connectives
+
+----------------------------------
+
 IMPORTANT UPDATES PLANNED:
 
 - In addition to the raw text for source, content, and destination: a list of terms from a linked entity glossary would be linked
