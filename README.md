@@ -29,7 +29,7 @@ It's probably wise to add code to output a json or another format which can easi
 
 The output of the SRL is formatted as a <a href="https://www.aclweb.org/anthology/J05-1004.pdf">PropBank frameset</a>, but has adopted unified conventions accross possible verbs.
 
-Here is a description of the "reporting obligation" frameset developped for this project:
+Here is a description of the "reporting obligation" frameset developed for this project:
 
 - `ARG0`: who needs to report
 - `ARG1`: what needs to be reported
