@@ -5,6 +5,9 @@ import base64
 
 from tests.fixtures import *
 
+from allennlp.predictors.predictor import Predictor
+import spacy
+
 from src.transform import ListTransformer
 from src.reporting_obligations import ReportingObligationsFinder
 from src.utils import SeekableIterator
@@ -49,9 +52,13 @@ def test_reporting_obligations_finder( get_path_json, get_path_sofa, get_path_ou
     
     assert sofa_listview == sofa_listview_ok
     
+    bert_model = Predictor.from_path( get_path_bert_model )
+
+    nlp=spacy.load( get_path_spacy_model )
+    
     #next check if ReportingObligationsFinder class is ok:
         
-    reporting_obligations_finder = ReportingObligationsFinder( cas, get_path_bert_model , get_path_spacy_model )
+    reporting_obligations_finder = ReportingObligationsFinder( cas, bert_model , nlp )
     reporting_obligations_finder.process_sentences( ListSofaID='ListView'  )
     reporting_obligations_finder.add_xml_to_cas( get_path_template , ROSofaID='ReportingObligationsView' )
     

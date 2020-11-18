@@ -1,9 +1,11 @@
 import os
 import re
 from typing import Tuple
-import spacy
 from xml.dom.minidom import parseString
-from allennlp.predictors.predictor import Predictor
+from allennlp.predictors.semantic_role_labeler import SemanticRoleLabelerPredictor
+
+import spacy
+from spacy.lang.en import English
 
 from cassis import Cas
 
@@ -13,19 +15,19 @@ from src.utils import looks_like_arg0, looks_like_arg2, match_class_in_list, mat
 
 class ReportingObligationsFinder():
     
-    def __init__( self, cas:Cas , bert_path:str , spacy_path:str  ):
+    def __init__( self, cas:Cas , bert_model: SemanticRoleLabelerPredictor , nlp: English  ):
         
         '''
         Find reporting obligations in text. See method process_sentences.
         :param sentences: List. List of Strings (i.e. sentences).
-        :param bert_path: String. Path to Bert based parser.
-        :param spacy_path: String. Path to spacy nlp model.
+        :param bert_model: SemanticRoleLabelerPredictor. Bert based parser.
+        :param nlp: Spacy model.
         '''
         
         self.cas=cas
             
-        self.bert_path=bert_path
-        self.spacy_path=spacy_path
+        self.bert_model=bert_model
+        self.nlp=nlp
         self.last_known_subject= ''
         #remember the current location ( i.e. part/annex/title/chapter/... )
         self.pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
@@ -91,42 +93,21 @@ class ReportingObligationsFinder():
             when_clause_subject = re.sub(r'^(an?|one|any( such( an?)?)?|such( an?)?) ', 'this ', when_clause_subject, re.I).strip()
             if when_clause_subject and looks_like_arg0(when_clause_subject):
                 self.last_known_subject = when_clause_subject
-          
-    def load_parser( self ):
-        
-        '''
-        Given a path, method loads AllenNLP parser (self.srl) 
-        :return: None.
-        '''
-    
-        print( f"loading AllenNLP predictor from {self.bert_path}" )
-        self.srl = Predictor.from_path( self.bert_path )
-    
+              
     def parse_sentence(  self, input_sentence:str ) -> dict:
         
         '''
-        Given a sentence, method parses the sentences using AllenNLP parser (self.srl) 
+        Given a sentence, method parses the sentences using AllenNLP parser (self.bert_model) 
         :param input_sentence: String.
         :return parsed_sentence: dict.
         '''
     
-        parsed_sentence=self.srl.predict(
+        parsed_sentence=self.bert_model.predict(
             sentence=input_sentence
         )
         
         return parsed_sentence
-    
-    def load_spacy_model( self ):
-        
-        '''
-        Given a path, method loads spacy model (self.nlp) 
-        :return: None.
-        '''
-    
-        print( f"loading spacy model from {self.spacy_path}" )
-        self.nlp=spacy.load( self.spacy_path )
-        
-        
+                
     @staticmethod
     def check_if_interesting_sentence_and_process_via_regexes( input_sentence:str ) -> str:
         
@@ -713,9 +694,6 @@ class ReportingObligationsFinder():
         :return: List.
         '''
         
-        self.load_parser()
-        self.load_spacy_model()
-
         self._list_xml=[]
 
         sentences=self.cas.get_view( ListSofaID ).sofa_string.split( "\n" )
