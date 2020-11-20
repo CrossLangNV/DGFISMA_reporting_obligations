@@ -36,7 +36,7 @@ Here is a description of the "reporting obligation" frameset developed for this 
 - `ARG2`: to who do we need to report it
 - `ARG3`: details about what needs to be reported
 
-In addition to that, modifier arguments follow the general Propbank conventions:
+In addition to that, modifier arguments follow the general [Propbank conventions](http://clear.colorado.edu/compsem/documents/propbank_guidelines.pdf):
 
 - `ARGM-TMP`: time
 - `ARGM-LOC`: location
