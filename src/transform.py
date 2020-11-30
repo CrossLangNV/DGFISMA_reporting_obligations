@@ -36,7 +36,7 @@ class ListTransformer():
         
         value_between_tagtype_generator=self.cas.get_view( OldSofaID ).select( value_between_tagtype )        
 
-        seek_vbtt=SeekableIterator( value_between_tagtype_generator )
+        seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
 
         lines=get_other_lines( self.cas , OldSofaID, seek_vbtt, 'root', paragraph_type=paragraph_type )
 

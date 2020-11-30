@@ -64,7 +64,7 @@ def test_get_other_lines( get_path_json, get_path_pickle, get_path_typesystem ):
 
     value_between_tagtype_generator=cas.get_view( 'html2textView' ).select( "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType" )        
 
-    seek_vbtt=SeekableIterator( value_between_tagtype_generator )
+    seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
 
     lines=get_other_lines( cas , 'html2textView' , seek_vbtt, 'root', paragraph_type= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph" )
         
@@ -124,7 +124,7 @@ def test_transform_lines( get_path_json, get_path_sofa, get_path_typesystem ):
 
     value_between_tagtype_generator=cas.get_view( 'html2textView' ).select( "com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType" )       
 
-    seek_vbtt=SeekableIterator( value_between_tagtype_generator )
+    seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
 
     lines=get_other_lines( cas , 'html2textView' , seek_vbtt, 'root', paragraph_type= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph" )
         
