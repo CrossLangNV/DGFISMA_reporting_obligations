@@ -696,9 +696,20 @@ class ReportingObligationsFinder():
         
         self._list_xml=[]
 
-        sentences=self.cas.get_view( ListSofaID ).sofa_string.split( "\n" )
+        #sentences=self.cas.get_view( ListSofaID ).sofa_string.split( "\n" )
         
-        for sentence in sentences:
+        offsets=[]
+        sentences=[]
+        for item in self.cas.get_view( ListSofaID ).sofa_string.split( "\n" ):
+            offset=eval(item.split( "|" )[-1])
+            assert type( offset ) ==tuple
+            offsets.append( offset )
+            sentences.append( "|".join(item.split( "|" )[:-1]) )
+
+        #sanity check
+        assert( len( offsets ) == len( sentences ) )
+        
+        for sentence, offset in zip(sentences, offsets):
             
             sentence=sentence.rstrip( '\r\n' )
             subsentence = re.sub(r'(^[^❮]+|[^❯]+$)',r'', sentence)  #finds everything between " ❮ ❯ " ==>the main sentence
@@ -707,6 +718,11 @@ class ReportingObligationsFinder():
             #process the main_sentence
             list_xml_sentence=self.process_sentence( sentence, subsentence, True )
             
+            #set the offset
+            #for xml_item in list_xml_sentence:
+            [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_sentence]
+            [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_sentence]
+
             self._list_xml+=list_xml_sentence
             
             #process subsentence:
@@ -715,6 +731,9 @@ class ReportingObligationsFinder():
                 list_subsentences = re.sub(r' ‖ and/or ', r' and/or ', subsentence).lstrip('❮').rstrip('❯').split(' ‖ ')
                 for item_subsentence in list_subsentences:
                     list_xml_subsentence=self.process_sentence( item_subsentence, '', False )
+                    #set the offset
+                    [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_subsentence]
+                    [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_subsentence]
                     self._list_xml+=list_xml_subsentence
                 
         return self._list_xml

@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Tuple
 import string
 import re
 
@@ -38,19 +38,29 @@ class ListTransformer():
 
         seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
 
-        lines=get_other_lines( self.cas , OldSofaID, seek_vbtt, 'root', paragraph_type=paragraph_type )
+        lines, offsets=get_other_lines( self.cas , OldSofaID, seek_vbtt, 'root', paragraph_type=paragraph_type )
 
-        transformed_lines=transform_lines( lines )
+        flatten_offsets( offsets )
         
+        assert len( lines ) == len( offsets )
+        
+        transformed_lines, transformed_lines_offsets=transform_lines( lines, offsets )
+        
+        assert len( transformed_lines ) == len( transformed_lines_offsets )
+        
+        lines_offsets=[]
+        for line, offset in zip( transformed_lines, transformed_lines_offsets  ):
+            lines_offsets.append(line + "|" + str( offset ))
+
         #add the transformed lines to the cas
         
         self.cas.create_view(NewSofaID)
         
-        self.cas.get_view( NewSofaID).sofa_string = "\n".join( transformed_lines )
+        self.cas.get_view( NewSofaID).sofa_string = "\n".join( lines_offsets )
         
 
 def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_generator: Generator, root_paragraph, \
-                    paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph", end=-1,   ) -> list: 
+                    paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph", end=-1,   ) -> Tuple[list,list]: 
     
     '''
     Convert cas with paragraph annotations to a nested lists to be used for annotation of reporting obligations.
@@ -67,10 +77,11 @@ def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_gene
     :param root_paragraph. The current paragraph.
     :param paragraph_type: String.
     :param end: Int. End index of the paragraph.
-    :return: List. Nested list.
+    :return: List, List. Lines and offsets.
     '''
 
     lines=[]
+    offsets=[]
     paragraphs_covering_tag=None
     new_root_paragraph=None
     
@@ -82,7 +93,7 @@ def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_gene
         
         if end >0 and tag.begin > end:
             value_between_tagtype_seekable_generator.rewind()
-            return lines
+            return lines, offsets
               
         paragraphs_covering_tag= ['root'] + list(cas.get_view( SofaID ).select_covering( paragraph_type, tag ))
      
@@ -99,13 +110,14 @@ def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_gene
         if paragraphs_covering_tag[ index_root+1: ]:
             new_root_paragraph=paragraphs_covering_tag[ index_root+1 ]
             value_between_tagtype_seekable_generator.rewind()
-            sublines=get_other_lines( cas, SofaID, value_between_tagtype_seekable_generator, new_root_paragraph, end=new_root_paragraph.end  )
+            sublines, sublines_offsets =get_other_lines( cas, SofaID, value_between_tagtype_seekable_generator, new_root_paragraph, end=new_root_paragraph.end  )
             lines.append( sublines )
-            
+            offsets.append( sublines_offsets )
         else:
             lines.append(  tag.get_covered_text() )
+            offsets.append( (tag.begin, tag.end) )
             
-    return lines
+    return lines, offsets
 
 #helper function
 def get_index_typesystem_elements_in_list( list_typesystem_elements: list, xmiID: int  ) -> int:
@@ -123,13 +135,14 @@ def get_index_typesystem_elements_in_list( list_typesystem_elements: list, xmiID
     return -1
 
 
-def transform_lines( lines: list  ) -> list:
+def transform_lines( lines: list, offsets: list  ) -> Tuple[list,list]:
     
     '''
     Function to transform the 'nested' lists produced by the function get_other_lines to merged sentences through folding of sublists (via function fold_sublist)
     and via hand crafted rules (via function handle_root_list)
-    :param lines: list.
-    :return: List.
+    :param lines: list. List of str and lists.
+    :param offsets: list. List of offsets in original document for each element in lines. 
+    :return: List, List.
     '''
 
     sentencizer = English()
@@ -137,8 +150,11 @@ def transform_lines( lines: list  ) -> list:
 
     other_lines=[]
     merged_sentences=[]
+    offsets_merged_sentences=[]
 
-    for line in lines:
+    assert len( lines ) == len( offsets )
+    
+    for line, offset in zip( lines, offsets ):
 
         main_line_other_line=()
 
@@ -175,7 +191,9 @@ def transform_lines( lines: list  ) -> list:
 
         if not main_line_other_line[1]: #i.e. no enumeration
             #Maybe should also handle processing of sections
-            merged_sentences+=break_long_paragraphs( main_line )
+            broken_sentences=break_long_paragraphs( main_line )
+            merged_sentences+=broken_sentences
+            offsets_merged_sentences+=[offset]*len( broken_sentences )
             continue                                                                                         
 
         #Handle main lines (i.e. start of enumerations) that do not end with a punctuation. 
@@ -188,9 +206,11 @@ def transform_lines( lines: list  ) -> list:
         last_sentence = re.sub(r'\s*[.]\s*$', '. ', last_sentence) 
 
         merged_sentence=handle_root_list( main_line , main_sentences, last_sentence, main_line_other_line[1])
-        merged_sentences+= break_long_paragraphs( merged_sentence )
-        
-    return merged_sentences
+        broken_sentences=break_long_paragraphs( merged_sentence )
+        merged_sentences+=broken_sentences
+        offsets_merged_sentences+=[offset]*len( broken_sentences )
+
+    return merged_sentences, offsets_merged_sentences
 
 #helper functions
 def fold_sublist( sublist: list, open_paren='❬', close_paren='❭'  )-> str: 
@@ -398,3 +418,23 @@ def break_long_paragraphs(text: str ) -> list:
     break_lines = [line.strip() for line in text.split( "\n" ) if line.strip()]
 
     return break_lines
+
+def flatten_offsets(  offsets: list ):
+    
+    '''
+    Helper function to flatten nested list of offsets
+    '''
+
+    def flatten(container):
+        for i in container:
+            if isinstance(i, (list)):
+                for j in flatten(i):
+                    yield j
+            else:
+                yield i
+    
+    for i,item in enumerate(offsets):
+        if type(item)==list:
+            flattened_list=list( flatten( item ) )
+            if flattened_list:
+                offsets[i]=( flattened_list[0][0], flattened_list[-1][-1] )

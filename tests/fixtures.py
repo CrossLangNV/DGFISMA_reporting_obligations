@@ -17,6 +17,10 @@ def get_path_pickle( request ):
     return os.path.join( FIXTURE_DIR , "pickle", request.param )
 
 @pytest.fixture(scope='function')
+def get_path_pickle_offsets( request ):
+    return os.path.join( FIXTURE_DIR , "pickle_offsets", request.param )
+
+@pytest.fixture(scope='function')
 def get_path_sofa( request ):
     return os.path.join( FIXTURE_DIR , "sofa_listview", request.param )
 

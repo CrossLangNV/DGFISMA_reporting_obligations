@@ -1,0 +1,150 @@
+<!doctype html>
+<style>
+
+    p {
+        margin: 0.75em 0px;
+        line-height: 2em;
+        white-space: nowrap;
+    }
+
+    span {
+        border: 2px solid currentColor;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    span {
+        background: lightblue;
+        color: royalblue;
+    }
+
+    .V {
+        background: yellow;
+        color: orangered;
+        font-weight: bold;
+    }
+
+    .ARG0,.ARG1,.ARG2,.C-ARG1 {
+        color: black;
+        background: white;
+    }
+
+    .ARGM-TMP {
+        color: green;
+        background: lightgreen;
+    }
+
+    .ARGM-NEG {
+        color: pink;
+        background: darkred;
+        border-color: darkred;
+    }
+
+    .PUNCT {
+        color: silver;
+        background: white;
+        border: none; padding: 0;
+    }
+
+    .ARG2 {
+        border-style: dotted;
+    }
+
+    .ARG1, .C-ARG1 {
+        color: white;
+        background: black;
+        border-color: black;
+        border-style: solid;
+    }
+
+    .ARG3, .ARGM-PRP, .ARGM-PRD, .ARGM-PNC {
+        color: white;
+        background: royalblue;
+        border-color: royalblue;
+        border-style: solid;
+    }
+
+    .updated-tag {
+        outline: 3px solid fuchsia;
+        outline-offset: 2px;
+    }
+
+    p[data-frequency-class="1"] {
+        opacity: 0.15;
+    }
+
+    p[data-frequency-might-be-3="true"]::before {
+        content: "♺";
+        border: 7px solid royalblue;
+        margin-right: 5px;
+        border-radius: 5px;
+        background: royalblue;
+        color: white;
+    }
+    p[data-frequency-class="3"]::before {
+        border-color: red;
+        background: red;
+        color: yellow;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+        font-family: sans-serif;
+        font-size: 12px;
+        color: silver;
+        font-weight: bold;
+        margin: 5px 0px;
+        border-left: 3px solid silver;
+        padding-left: 3px;
+    }
+    h2 { border-left-width: 3px; }
+    h2 { border-left-width: 6px; }
+    h3 { border-left-width: 9px; }
+    h4 { border-left-width: 12px; }
+    h5 { border-left-width: 15px; }
+    h6 { border-left-width: 18px; }
+    p + :not(p):not(h6) { margin-top: 45px; }
+
+    [data-old-text] {
+        outline: 4px dashed fuchsia;
+        outline-offset: 1px;
+        position: relative;
+    }
+    [TODO] {
+        outline: 4px dashed red;
+        outline-offset: 1px;
+    }
+
+    [data-old-text]:hover::before {
+        content: attr(data-old-text);
+        background: fuchsia;
+        color: white;
+        position: absolute; top: -2em;
+        padding: 1px 6px; border-radius: 4px;
+    }
+
+</style>
+
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.20515594523894834|0.7843106687068939|0.01053336447566835">Whereas , , <span class="ARG0">Such a final system</span> <span class="ARGM-MOD">should</span> <span class="V">provide</span> <span class="ARG1">for the determination and raising of administrative contributions</span> <span class="ARGM-PRP">not only for significant entities , but for all entities that are subjected to the Single Resolution Mechanism</span> . The contributions should be calculated at the highest level of consolidation of those entities within the participating Member States , since all subsidiaries of a group inside the perimeter of consolidation fall within the scope of the decision - making powers of the Board when adopting group resolution plans , carrying out the assessment of resolvability of groups and adopting resolution decisions for groups . The exercise of those tasks implies expenditures for the Board for collecting and analysing information and data related to each subsidiary included in the perimeter of consolidation . Since those are expenditures related to the services provided by the Board to the entities that are subjected to the Single Resolution Mechanism , they should be paid by those entities and therefore the administrative contributions should be calculated on the basis of their consolidated accounts at the highest level of consolidation within the participating Member States and only one contribution per group should be calculated .</p>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.1643677579239011|0.8349809408187867|0.0006513086613267661">It is more efficient to request the ECB to transmit data it received and verified in the exercise of its tasks and powers conferred on it by Council Regulation ( EU ) No 1024/2013 ( 4 ) to the Board , than to duplicate the reporting burden for the institutions and entities concerned . <span class="ARG0">Data sharing between the ECB and the Board</span> <span class="ARGM-MOD">would</span> <span class="ARGM-ADV">also</span> <span class="V">allow</span> <span class="ARG1">avoiding duplication of the data verification process by the Board</span> and builds on the obligation of the Board and the ECB to cooperate closely in the exercise of their respective responsibilities under Regulation ( EU ) No 806/2014 . Any duplication of the data reporting and verification processes would inevitably require more time for the calculation and raising of contributions and would lead to a less efficient system . It follows that , as a part of the cooperation obligation , the ECB should be required to transmit to the Board the data received from the institutions and entities concerned for the purpose of calculating contributions to the Board . The Board should rely to the greatest extent possible on the data collected by the ECB .</p>
+<h6>Article 4</h6>
+<p data-frequency-class="3" data-frequency-could-be-1="false" data-frequency-could-be-2="false" data-frequency-could-be-3="true" data-frequency-might-be-1="false" data-frequency-might-be-2="false" data-frequency-might-be-3="true" data-frequency-split="0.005030426847588376|0.00018803796380808537|0.9947815239429475"><span class="ARG0">The Board</span> <span class="ARGM-MOD">shall</span> <span class="V">report</span> <span class="ARGM-TMP">yearly</span> <span class="ARG2">to the Commission</span> <span class="ARG1">on the appropriateness of the allocation laid down in paragraph 1 , in the light of the changing composition of the two categories of entities and groups</span> .</p>
+<h6>Article 6</h6>
+<p data-frequency-class="3" data-frequency-could-be-1="false" data-frequency-could-be-2="false" data-frequency-could-be-3="true" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="true" data-frequency-split="7.403101058116592e-05|0.230515156313777|0.7694108217954636"><span class="ARGM-TMP">Each year</span> , <span class="ARGM-TMP">within 5 working days of the issuance of fee notices in accordance with Article 12(1 ) of Regulation ( EU ) No 1163/2014 , and in any case no later than 31 December of the year for which the fee notices are issued</span> , <span class="ARG0">the ECB</span> <span class="ARGM-MOD">shall</span> <span class="V">provide</span> <span class="ARG2">the Board</span> <span class="ARG1">with data on each contribution debtor</span> <span class="ARGM-PRD">as collected by the ECB in that year and used to determine the supervisory fees in accordance with Regulation ( EU ) No 1163/2014</span> .</p>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.13069281801581384|0.8273513972759248|0.041955807898193594"><span class="ARGM-ADV">In case the ECB issues additional invoices or recalculates the annual supervisory fee in accordance with Article 7 of Regulation ( EU ) No 1163/2014</span> , <span class="ARG0">the ECB</span> <span class="ARGM-MOD">shall</span> <span class="V">communicate</span> <span class="ARG2">to the Board</span> <span class="ARG1">the new data</span> <span class="ARGM-TMP">within 5 days of the issuance of fee notices</span> .</p>
+<p data-frequency-class="1" data-frequency-could-be-1="true" data-frequency-could-be-2="false" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="true" data-frequency-split="0.4940375819802284|0.28394610541872684|0.222016289835301">For the calculation of the individual annual contributions to be collected in a given financial year , the Board shall use <span class="ARG1">the data</span> <span class="V">collected</span> <span class="ARG0">by the ECB</span> <span class="ARGM-TMP">in the previous financial year</span> in accordance with Regulation ( EU ) No 1163/2014 and provided to the Board in accordance with this Article or Article 11 , as applicable .</p>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.0062182697933167224|0.9937269814312458|5.4705588321724005e-05"><span class="ARGM-ADV">In case no data provided by the ECB is available</span> , <span class="ARG0">the relevant national competent authority</span> <span class="ARGM-MOD">shall</span> <span class="ARGM-TMP">upon request</span> <span class="V">provide</span> <span class="ARG2">the Board</span> <span class="ARG1">with the data at its disposal</span> .</p>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.05460122598233284|0.9446589626371861|0.0007398151162533394"><span class="ARGM-ADV">In case no data provided by the national competent authority is available</span> , <span class="ARG0">the contribution debtor</span> <span class="ARGM-MOD">shall</span> <span class="ARGM-TMP">upon request</span> <span class="V">provide</span> <span class="ARG2">the Board</span> <span class="ARG1">with the necessary data</span> <span class="ARGM-TMP">within a deadline set by the Board</span> . In the absence of a reply by the contribution debtor within the deadline set by the Board , the Board may determine the data on the basis of reasonable assumptions .</p>
+<h6>Article 8</h6>
+<p data-frequency-class="2" data-frequency-could-be-1="true" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.4525988191366196|0.5463279768824578|0.001073211382026784"><span class="ARG1">A contribution notice</span> <span class="ARGM-MOD">shall</span> be <span class="V">issued</span> <span class="ARG0">by the Board</span> <span class="ARG2">to the contribution debtors</span> .</p>
+<p data-frequency-class="1" data-frequency-could-be-1="true" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.5527570334728807|0.4466779266018421|0.0005650419196172152"><span class="ARG0">The Board</span> <span class="ARGM-MOD">shall</span> <span class="V">notify</span> <span class="ARG2">the contribution notice</span> <span class="ARG2">through any of the following means ❮electronically or by other comparable means of communication ‖ by fax ‖ by express courier service ‖ by registered mail with a form for acknowledgement of receipt ‖ by service or delivery by hand❯</span></p>
+<p data-frequency-class="1" data-frequency-could-be-1="true" data-frequency-could-be-2="false" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="false" data-frequency-might-be-3="false" data-frequency-split="0.8957967519760132|0.05126266907900572|0.05294053312391043"><span class="ARG1">The annual contribution due by the entities referred to in Article 2 of Regulation ( EU ) No 806/2014 that are members of the same group</span> <span class="ARGM-MOD">shall</span> be <span class="V">collected</span> <span class="ARG2">from the contribution debtor of that group</span> .</p>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="1.9261053057562095e-05|0.9998373538255692|0.00014338225664687343"><span class="ARGM-ADV">In the event of any partial payment , non - payment or non - compliance with the conditions for payment specified in the contribution notice by the contribution debtor</span> , <span class="ARG0">the Board</span> <span class="ARGM-MOD">shall</span> <span class="V">inform</span> <span class="ARG2">the national resolution authority of the participating Member State in which the contribution debtor is established</span> .</p>
+<h6>Article 9</h6>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.10260444097220899|0.8944452941417695|0.002950308134313673"><span class="ARG0">The government of each participating Member State</span> <span class="ARGM-MOD">shall</span> designate and <span class="V">notify</span> <span class="ARG2">to the Board and to the Court of Justice of the European Union</span> <span class="ARG2">an authority for the purposes of verifying the authenticity of individual contribution decisions</span> .</p>
+<h6>Article 10</h6>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="false" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.10422346778213978|0.8949606835842133|0.000815862296440173">Without prejudice to Article 6(4 ) , for the recalculation of the amount of contributions due by each entity in the financial years belonging to the provisional period , the Board shall use <span class="ARG1">the data</span> <span class="V">collected</span> <span class="ARG0">by the ECB</span> <span class="ARGM-TMP">in those financial years</span> in accordance with Regulation ( EU ) No 1163/2014 and provided to the Board in accordance with Article 11 .</p>
+<h6>Article 11</h6>
+<p data-frequency-class="2" data-frequency-could-be-1="true" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.4970387041568757|0.5022900804877282|0.0006712008733302354"><span class="ARGM-TMP">Within 30 days of the entry into force of this Regulation</span> , <span class="ARG0">the ECB</span> <span class="ARGM-MOD">shall</span> <span class="V">provide</span> <span class="ARG2">the Board</span> <span class="ARG1">with the data as specified in Article 6 and collected by the ECB in accordance with Regulation ( EU ) No 1163/2014 in financial years belonging to the provisional period</span> .</p>
+<h6>Article 12</h6>
+<p data-frequency-class="2" data-frequency-could-be-1="false" data-frequency-could-be-2="true" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.15639549829065802|0.776914542913437|0.06668997472152113"><span class="ARG0">Any mandate given to a service provider for the purposes of outsourcing tasks</span> <span class="ARGM-MOD">shall</span> <span class="ARGM-MNR">clearly</span> <span class="V">state</span> <span class="ARG1">the duration of the mandate and the specific tasks that are outsourced</span> and establish a framework for regular reporting by the service provider to the Board .</p>
+<p data-frequency-class="1" data-frequency-could-be-1="true" data-frequency-could-be-2="false" data-frequency-could-be-3="false" data-frequency-might-be-1="true" data-frequency-might-be-2="true" data-frequency-might-be-3="false" data-frequency-split="0.5670849218964578|0.3483966287225485|0.08451840939815157">Before taking any decision on outsourcing , <span class="ARG0">the Board</span> shall obtain the consent of the ECB to <span class="V">share</span> <span class="ARG1">the data provided by the ECB</span> <span class="ARG2">with a service provider</span> , <span class="ARGM-MNR">in accordance with applicable confidentiality provisions</span> .</p>
