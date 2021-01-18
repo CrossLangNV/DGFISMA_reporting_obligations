@@ -278,8 +278,8 @@ class ReportingObligationsFinder():
         try:
             srl_dom_output = parseString(srl_html_output)
         except:
-            raise ValueError(srl_html_output)
-
+            print( f"Warning: could not parse: '{srl_html_output}'" )
+            return
 
         # fix particular verb constructions
         args = list(filter(lambda s: match_class(s, r'^(ARG[12]|ARGM-ADV|ARGM-MNR)$'), srl_dom_output.getElementsByTagName("span")))
@@ -676,6 +676,9 @@ class ReportingObligationsFinder():
 
             srl_dom_output=self.convert_to_xml_and_fix_tags_hand_crafted(  verb, subsentence  )
 
+            if not srl_dom_output:
+                continue
+            
             #process the paragraph (sentence) and 'verb' with spacy model
             srl_dom_output=self.predict_obligation_frequency( sentence, srl_dom_output  )
 
@@ -778,4 +781,4 @@ class ReportingObligationsFinder():
         
         with open( output_path , "w"  ) as f:
             f.write( html_template + "\n".join( list_xml_string )  )
-         
+            
