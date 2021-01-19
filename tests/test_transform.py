@@ -5,7 +5,7 @@ import base64
 
 from tests.fixtures import *
 
-from src.transform import ListTransformer, get_other_lines, transform_lines, fold_sublist, flatten_offsets
+from src.transform import ListTransformer, get_other_lines, transform_lines, fold_sublist, flatten_offsets, postprocess_nested_lines
 from src.utils import SeekableIterator
 
 from cassis.typesystem import load_typesystem
@@ -135,6 +135,8 @@ def test_transform_lines( get_path_json, get_path_sofa, get_path_typesystem ):
         
     flatten_offsets( offsets )
     
+    lines, offsets =postprocess_nested_lines( lines, offsets  )
+
     assert len( lines ) == len( offsets )
     
     transformed_lines, transformed_lines_offsets=transform_lines( lines, offsets )

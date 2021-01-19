@@ -15,7 +15,6 @@ class ListTransformer():
         Add a list view to the cas.
         :param cas: Cas. Cas object (mutable object).
         '''
-        
         self.cas=cas
         
     def add_list_view( self , OldSofaID: str, NewSofaID: str='ListView', \
@@ -37,13 +36,15 @@ class ListTransformer():
         value_between_tagtype_generator=self.cas.get_view( OldSofaID ).select( value_between_tagtype )        
 
         seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
-
+        
         lines, offsets=get_other_lines( self.cas , OldSofaID, seek_vbtt, 'root', paragraph_type=paragraph_type )
 
         flatten_offsets( offsets )
         
+        lines, offsets =postprocess_nested_lines( lines, offsets  )
+
         assert len( lines ) == len( offsets )
-        
+
         transformed_lines, transformed_lines_offsets=transform_lines( lines, offsets )
         
         assert len( transformed_lines ) == len( transformed_lines_offsets )
@@ -419,22 +420,49 @@ def break_long_paragraphs(text: str ) -> list:
 
     return break_lines
 
+def flatten(container:list):
+    
+    '''
+    Helper function to flatten lists
+    '''
+    
+    for i in container:
+        if isinstance(i, (list)):
+            for j in flatten(i):
+                yield j
+        else:
+            yield i
+
 def flatten_offsets(  offsets: list ):
     
     '''
     Helper function to flatten nested list of offsets
     '''
-
-    def flatten(container):
-        for i in container:
-            if isinstance(i, (list)):
-                for j in flatten(i):
-                    yield j
-            else:
-                yield i
     
     for i,item in enumerate(offsets):
         if type(item)==list:
             flattened_list=list( flatten( item ) )
             if flattened_list:
                 offsets[i]=( flattened_list[0][0], flattened_list[-1][-1] )
+                
+                
+def postprocess_nested_lines( lines, offsets, cutoff:int = 50 ):
+    
+    '''
+    Helper function to flatten long nested lists. Necessary for performance reasons.
+    '''
+    
+    new_lines=[]
+    new_offsets=[]
+
+    for line, offset in zip( lines, offsets ):
+        if type( line ) == list:
+            if len( line )>cutoff:
+                new_lines+=line
+                new_offsets+=[offset]*len( line )
+                continue
+                
+        new_lines.append( line )
+        new_offsets.append( offset )
+        
+    return new_lines, new_offsets
