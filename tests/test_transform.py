@@ -47,7 +47,8 @@ def test_list_transformer( get_path_json, get_path_sofa, get_path_typesystem ):
                        ("small_nested_tables_response.json", "small_nested_tables_nested_lines.p", "small_nested_tables_offsets.p", "typesystem.xml" ), 
                        ("minus_lesser_of_response.json", "minus_lesser_of_nested_lines.p", "minus_lesser_of_offsets.p", "typesystem.xml" ) ,
                        ("doc_bf4ef384-bd7a-51c8-8f7d-d2f61865d767_response.json", "doc_bf4ef384-bd7a-51c8-8f7d-d2f61865d767_nested_lines.p", "doc_bf4ef384-bd7a-51c8-8f7d-d2f61865d767_offsets.p",  "typesystem.xml" ) ,
-                       ("double_nested_list_response.json", "double_nested_list_nested_lines.p", "double_nested_list_offsets.p", "typesystem.xml" ) ],  
+                       ("double_nested_list_response.json", "double_nested_list_nested_lines.p", "double_nested_list_offsets.p", "typesystem.xml" ),
+                       ("32002R0063-input.xmi_outputPar_det.json", "32002R0063-input.xmi_outputPar_det_lines.p", "32002R0063-input.xmi_outputPar_det_offsets.p", "typesystem.xml" )],  
                          indirect=["get_path_json", "get_path_pickle", "get_path_pickle_offsets" , "get_path_typesystem"  ])
 def test_get_other_lines( get_path_json, get_path_pickle, get_path_pickle_offsets, get_path_typesystem ):
         

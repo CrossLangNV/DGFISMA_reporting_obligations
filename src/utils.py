@@ -59,3 +59,6 @@ def update_class(arg, new_class):
 
 def text_of(element):
     return str(element.firstChild.data)
+
+
+

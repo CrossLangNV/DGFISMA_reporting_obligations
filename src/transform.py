@@ -1,4 +1,4 @@
-from typing import Generator, Tuple
+from typing import Generator, Tuple, Set
 import string
 import re
 
@@ -34,7 +34,7 @@ class ListTransformer():
         '''
         
         value_between_tagtype_generator=self.cas.get_view( OldSofaID ).select( value_between_tagtype )        
-
+        
         seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
         
         lines, offsets=get_other_lines( self.cas , OldSofaID, seek_vbtt, 'root', paragraph_type=paragraph_type )
@@ -60,7 +60,7 @@ class ListTransformer():
         self.cas.get_view( NewSofaID).sofa_string = "\n".join( lines_offsets )
         
 
-def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_generator: Generator, root_paragraph, \
+def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_generator: Generator, root_paragraph:str='root', \
                     paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph", end=-1,   ) -> Tuple[list,list]: 
     
     '''
@@ -91,13 +91,18 @@ def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_gene
         #check if tag is a "p", and if it was not part of one of the already nested p's.
         if not tag.tagName == 'p':
             continue
+                
+        #check if p-tag is deepest child (i.e. old eurlex have nested p's)
+        if not deepest_child( cas, SofaID, tag ):
+            continue
         
-        if end >0 and tag.begin > end:
+        #if tag.end>end==>then tag no longer part of paragraph
+        if end >0 and tag.end > end:
             value_between_tagtype_seekable_generator.rewind()
             return lines, offsets
-              
+                    
         paragraphs_covering_tag= ['root'] + list(cas.get_view( SofaID ).select_covering( paragraph_type, tag ))
-     
+    
         #If no enumeration detected yet, set root_paragraph to 'root'.
         if root_paragraph=='root': 
             index_root=0
@@ -391,6 +396,15 @@ def handle_root_list( main_line:str , main_sentences: list, last_sentence: str, 
 
 #helper functions:
 
+def deepest_child( cas:Cas, SofaID:str , tag ,tagnames: Set[str] = set( 'p' ), \
+                  value_between_tagtype: str="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType"  ) -> bool:
+    #helper function
+    if len( [item for item in cas.get_view( SofaID ).select_covered(  value_between_tagtype , tag ) \
+             if (item.tagName in tagnames and item.get_covered_text() ) ] ) > 1:
+        return False
+    else:
+        return True
+    
 def check_valid_list(  line: list ) -> bool:
     
     if len( line )<=1:
