@@ -23,7 +23,7 @@ TEMPLATE_PATH="/work/templates/out.html.template"
 TYPESYSTEM_PATH="/work/typesystems/typesystem.xml"
 
 print( f"loading AllenNLP predictor from {BERT_PATH}" )
-bert_model = Predictor.from_path( BERT_PATH )
+bert_model = Predictor.from_path( BERT_PATH, cuda_device=0 )
 
 print( f"loading spacy model from {SPACY_PATH}" )
 nlp=spacy.load( SPACY_PATH )

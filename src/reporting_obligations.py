@@ -101,7 +101,6 @@ class ReportingObligationsFinder():
         :param input_sentence: String.
         :return parsed_sentence: dict.
         '''
-    
         parsed_sentence=self.bert_model.predict(
             sentence=input_sentence
         )
@@ -640,7 +639,8 @@ class ReportingObligationsFinder():
         :param main_sentence: Boolean. If it is main sentence or subsentence. If it is subsentence, then we do not update the last known subject and location.
         :return: List.
         '''
-        
+        #import time
+        #start=time.time()
         list_xml=[]
         
         if main_sentence:
@@ -654,8 +654,14 @@ class ReportingObligationsFinder():
         if not sentence: #if not an interesting sentence (i.e., it is a definition, it does not contain interesting verbs), then continue
             return []
 
+        #start_parsing=time.time()
         #parse the sentence with ALLEN_NLP model:
-        parsed_sentence=self.parse_sentence( sentence )
+        try:
+            parsed_sentence=self.parse_sentence( sentence )
+        except RuntimeError:
+            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
+            return []
+        #print( f"Total parsing time: {time.time()-start_parsing} s",   )
 
         verbs=self.filter_data_to_relevant_verbs( parsed_sentence )
 
@@ -685,7 +691,9 @@ class ReportingObligationsFinder():
             srl_dom_output=self.co_reference_resolution(  srl_dom_output  )
 
             list_xml.append( srl_dom_output )
-    
+        
+        #print( f"Total processing time: {time.time()-start} s",   )
+        
         return list_xml
     
     def process_sentences( self, ListSofaID: str='ListView'  ) ->list:

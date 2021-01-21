@@ -1,6 +1,6 @@
-FROM ubuntu:18.04
+#FROM ubuntu:18.04
 #gpu
-#FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
 MAINTAINER arne <arnedefauw@gmail.com>
 
@@ -32,10 +32,8 @@ RUN conda install -y python=3.7.3 && \
 conda install flask==1.1.1 && \
 #conda install --name base scikit-learn=0.20.0 && \
 conda install pandas=1.0.1 && \
-conda install pytorch==1.4.0 cpuonly -c pytorch
+conda install pytorch==1.4.0 cudatoolkit=10.0 -c pytorch
 
-#gpu
-#conda install pytorch==1.4.0 cudatoolkit=10.0 -c pytorch
 
 #Install Cython
 RUN apt-get update
