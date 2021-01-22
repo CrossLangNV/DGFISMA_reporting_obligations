@@ -22,7 +22,8 @@ SPACY_PATH="/work/models/spacy_models/spacy-textcat"
 TEMPLATE_PATH="/work/templates/out.html.template"    
 TYPESYSTEM_PATH="/work/typesystems/typesystem.xml"
 
-reporting_obligations_finder = ReportingObligationsFinder(  BERT_PATH, SPACY_PATH  )
+GPU=0  #0,1,...-1(CPU)
+reporting_obligations_finder = ReportingObligationsFinder(  BERT_PATH, SPACY_PATH, GPU  )
  
 @app.route('/add_reporting_obligations', methods=['POST'])
 def add_reporting_obligations():    
@@ -79,4 +80,4 @@ def index():
     return "Up and running"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5004, debug=True, threaded=False)
+    app.run(host='0.0.0.0', port=5004, debug=True, threaded=False, use_reloader=False)

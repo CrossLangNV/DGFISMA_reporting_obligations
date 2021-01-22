@@ -1,6 +1,7 @@
 import os
 import re
 from typing import Tuple
+import torch
 from xml.dom.minidom import parseString
 from allennlp.data.tokenizers.word_splitter import SpacyWordSplitter
 
@@ -15,23 +16,30 @@ from src.utils import looks_like_arg0, looks_like_arg2, match_class_in_list, mat
 
 class ReportingObligationsFinder():
     
-    def __init__( self , bert_model_path: str , spacy_model_path: str  ):
+    def __init__( self , bert_model_path: str , spacy_model_path: str, gpu:int=-1  ):
         
         '''
         Find reporting obligations in text. See method process_sentences.
         :param bert_model_parth: Path to bert_model.
         :param spacy_model_path: Path to Spacy model.
+        :param gpu: gpu id. cpu if gpu=-1.
         '''
                     
-        self.load_bert_model( bert_model_path )
+        self.load_bert_model( bert_model_path, gpu )
         self.load_spacy_model( spacy_model_path )
         
-    def load_bert_model( self, bert_model_path: str  ):
+    def load_bert_model( self, bert_model_path: str, gpu:int  ):
         
         if not hasattr(self, 'bert_model'):
             
             print( f"loading AllenNLP predictor from {bert_model_path}" )
-            self.bert_model = Predictor.from_path( bert_model_path, cuda_device=0 )        
+            if torch.cuda.is_available():
+                cuda_device=gpu
+            else:
+                print( "No gpu available. Processing on cpu." )
+                cuda_device=-1
+            
+            self.bert_model = Predictor.from_path( bert_model_path, cuda_device=cuda_device )        
             
             
     def load_spacy_model( self, spacy_model_path: str ):
@@ -681,11 +689,7 @@ class ReportingObligationsFinder():
         if len( sentence.split() )>400 or len(self._tokenizer.split_words( sentence ))>500:
             print( f'Not parsing "{sentence}". Please make sure number of tokens in sentence is < 512.' )
             return []
-        
-        #if len( sentence ) > 2000 or len( sentence.split())>300 :
-        #    print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 300 and number of chars<2000.' )
-        #    return []
-        
+                
         parsed_sentence=self.parse_sentence( sentence )
 
         #print( f"Total parsing time: {time.time()-start_parsing} s",   )
