@@ -22,13 +22,8 @@ SPACY_PATH="/work/models/spacy_models/spacy-textcat"
 TEMPLATE_PATH="/work/templates/out.html.template"    
 TYPESYSTEM_PATH="/work/typesystems/typesystem.xml"
 
-print( f"loading AllenNLP predictor from {BERT_PATH}" )
-bert_model = Predictor.from_path( BERT_PATH, cuda_device=0 )
-
-print( f"loading spacy model from {SPACY_PATH}" )
-nlp=spacy.load( SPACY_PATH )
-
-    
+reporting_obligations_finder = ReportingObligationsFinder(  BERT_PATH, SPACY_PATH  )
+ 
 @app.route('/add_reporting_obligations', methods=['POST'])
 def add_reporting_obligations():    
     if not request.json:
@@ -64,9 +59,8 @@ def add_reporting_obligations():
 
         #Find reporting obligations and add to cas:
         
-        reporting_obligations_finder = ReportingObligationsFinder( cas, bert_model, nlp )
-        reporting_obligations_finder.process_sentences( ListSofaID='ListView'  )
-        reporting_obligations_finder.add_xml_to_cas( TEMPLATE_PATH, ROSofaID='ReportingObligationsView' )
+        reporting_obligations_finder.process_sentences( cas, ListSofaID='ListView'  )
+        reporting_obligations_finder.add_xml_to_cas( cas, TEMPLATE_PATH, ROSofaID='ReportingObligationsView' )
                 
     else:
         print( f"content type { request.json[ 'content_type'] } not supported by paragraph annotation app" )   

@@ -58,9 +58,9 @@ def test_reporting_obligations_finder( get_path_json, get_path_sofa, get_path_ou
     
     #next check if ReportingObligationsFinder class is ok:
         
-    reporting_obligations_finder = ReportingObligationsFinder( cas, bert_model , nlp )
-    reporting_obligations_finder.process_sentences( ListSofaID='ListView'  )
-    reporting_obligations_finder.add_xml_to_cas( get_path_template , ROSofaID='ReportingObligationsView' )
+    reporting_obligations_finder = ReportingObligationsFinder( get_path_bert_model , get_path_spacy_model )
+    reporting_obligations_finder.process_sentences( cas, ListSofaID='ListView'  )
+    reporting_obligations_finder.add_xml_to_cas( cas, get_path_template , ROSofaID='ReportingObligationsView' )
     
     
     sofa_reporting_obligations=cas.get_view( "ReportingObligationsView" ).sofa_string

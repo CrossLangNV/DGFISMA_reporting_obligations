@@ -2,11 +2,11 @@ import os
 import re
 from typing import Tuple
 from xml.dom.minidom import parseString
-from allennlp.predictors.semantic_role_labeler import SemanticRoleLabelerPredictor
+from allennlp.data.tokenizers.word_splitter import SpacyWordSplitter
+
+from allennlp.predictors.predictor import Predictor
 
 import spacy
-from spacy.lang.en import English
-
 from cassis import Cas
 
 from src.keywords_nouns_verbs import ALL_ARG2_KEYWORDS, PLURAL_OR_NODET_ARG2_KEYWORDS, INTERESTING_VERBS, OBLIGATION_VERBS, INTERESTING_NOUNS, OBLIGATION_NOUNS, INTERESTING_NOUNS_VALID_VERBS_DIRECT, INTERESTING_NOUNS_VALID_VERBS_SUBJ, PENDING_LOCATION_TYPES
@@ -15,28 +15,46 @@ from src.utils import looks_like_arg0, looks_like_arg2, match_class_in_list, mat
 
 class ReportingObligationsFinder():
     
-    def __init__( self, cas:Cas , bert_model: SemanticRoleLabelerPredictor , nlp: English  ):
+    def __init__( self , bert_model_path: str , spacy_model_path: str  ):
         
         '''
         Find reporting obligations in text. See method process_sentences.
-        :param sentences: List. List of Strings (i.e. sentences).
-        :param bert_model: SemanticRoleLabelerPredictor. Bert based parser.
-        :param nlp: Spacy model.
+        :param bert_model_parth: Path to bert_model.
+        :param spacy_model_path: Path to Spacy model.
         '''
+                    
+        self.load_bert_model( bert_model_path )
+        self.load_spacy_model( spacy_model_path )
         
-        self.cas=cas
+    def load_bert_model( self, bert_model_path: str  ):
+        
+        if not hasattr(self, 'bert_model'):
             
-        self.bert_model=bert_model
-        self.nlp=nlp
-        self.last_known_subject= ''
-        #remember the current location ( i.e. part/annex/title/chapter/... )
-        self.pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
+            print( f"loading AllenNLP predictor from {bert_model_path}" )
+            self.bert_model = Predictor.from_path( bert_model_path, cuda_device=0 )        
+            
+            
+    def load_spacy_model( self, spacy_model_path: str ):
         
+        if not hasattr(self, 'nlp'):
+            
+            print( f"loading spacy model from {spacy_model_path}" )
+            self.nlp=spacy.load( spacy_model_path )
+            
+            
+    def _initialize_tokenizer( self, language="en_core_web_sm" ):
         
+        if not hasattr( self, "_tokenizer" ):
+            
+            print( f"loading tokenizer {language}" )
+            self._tokenizer=SpacyWordSplitter(language=language, pos_tags=True)
+        return self._tokenizer
+            
+
     def update_pending_location_names( self, input_sentence:str ):
         
         '''
-        Given a sentence, the method updates self.pending_location_names (i.e. (part, annex), title, chapter, section, sub-section, article). If a new title, chapter,... is found, self.last_known_subject is reset.
+        Given a sentence, the method updates self._pending_location_names (i.e. (part, annex), title, chapter, section, sub-section, article). If a new title, chapter,... is found, self._last_known_subject is reset.
         :param input_sentence: String.
         :return: None. 
         '''
@@ -44,25 +62,25 @@ class ReportingObligationsFinder():
         for i, loc_type_names in enumerate(PENDING_LOCATION_TYPES):
             for loc_type in loc_type_names:
                 if str(input_sentence[0:len(loc_type)]).lower() == loc_type:
-                    for j in range(i,len(self.pending_location_names)):
-                        self.pending_location_names[j] = ''
-                    self.pending_location_names[i] = input_sentence
-                    self.last_known_subject='' # reset last known subject every article
+                    for j in range(i,len(self._pending_location_names)):
+                        self._pending_location_names[j] = ''
+                    self._pending_location_names[i] = input_sentence
+                    self._last_known_subject='' # reset last known subject every article
      
     
     def get_and_flush_pending_location_names( self ):
         
         '''
-        Method resets self.pending_location_names. Current locations (self.pending_location_names) are converted to an xml element and stored in a List. 
+        Method resets self._pending_location_names. Current locations (self._pending_location_names) are converted to an xml element and stored in a List. 
         :return: List.
         '''
         
         list_location_xml=[]
         
-        for i, loc_name in enumerate(self.pending_location_names):
+        for i, loc_name in enumerate(self._pending_location_names):
             if len(loc_name) > 0: 
                 list_location_xml.append(  parseString( '<h' + str(i+1) + '>' + loc_name + '</h' + str(i+1) + '>' ) )      
-            self.pending_location_names[i] = ''
+            self._pending_location_names[i] = ''
 
         return list_location_xml
     
@@ -70,7 +88,7 @@ class ReportingObligationsFinder():
     def update_last_known_subject(self, input_sentence:str):
         
         '''
-        Given a sentence, method updates self.last_known_subject using various regexes.
+        Given a sentence, method updates self._last_known_subject using various regexes.
         :param input_sentence: String.
         :return: None.
         '''
@@ -83,7 +101,7 @@ class ReportingObligationsFinder():
         when_clause_subject = re.sub(r'^(an?|the|this|that|their|its|one|any( such( an?)?)?|such( an?)?) (?![A-Z][A-Z])', 'this ', subj_match_str, re.I).strip()
         when_clause_subject = re.sub(r'^(an?|one|any( such( an?)?)?|such( an?)?) ', 'this ', when_clause_subject, re.I).strip()
         if when_clause_subject and looks_like_arg0(when_clause_subject): 
-            self.last_known_subject = when_clause_subject
+            self._last_known_subject = when_clause_subject
 
         if re.search(r'shall|may|must', input_sentence):
             # shall lookup
@@ -92,7 +110,7 @@ class ReportingObligationsFinder():
             when_clause_subject = re.sub(r'^(an?|the|this|that|their|its|one|any( such( an?)?)?|such( an?)?) (?![A-Z][A-Z])', 'this ', subj_match_str, re.I).strip()
             when_clause_subject = re.sub(r'^(an?|one|any( such( an?)?)?|such( an?)?) ', 'this ', when_clause_subject, re.I).strip()
             if when_clause_subject and looks_like_arg0(when_clause_subject):
-                self.last_known_subject = when_clause_subject
+                self._last_known_subject = when_clause_subject
               
     def parse_sentence(  self, input_sentence:str ) -> dict:
         
@@ -549,7 +567,7 @@ class ReportingObligationsFinder():
     def co_reference_resolution(  self, srl_dom_output ):
 
         '''
-        Input is an xml element. Method solves co-reference resolution, and changes tags accordingly. For this it uses self.last_known_subject. 
+        Input is an xml element. Method solves co-reference resolution, and changes tags accordingly. For this it uses self._last_known_subject. 
         :param srl_dom_output: xml.dom.minidom.Document.
         :return: xml.dom.minidom.Document. 
         '''
@@ -603,15 +621,15 @@ class ReportingObligationsFinder():
                         arg.setAttribute('TODO','true')
 
         # last_known_subject co-reference resolution (for subjects, obviously)
-        if self.last_known_subject:
+        if self._last_known_subject:
             for arg in srl_dom_output.getElementsByTagName("span"):
                 if match_class_in_list(arg, 'ARG0'.split(',')):
                     if (False
                         or (text_of(arg).lower() == 'it')
                         or (text_of(arg).lower() == 'they')
                     ):
-                        current_last_known_subject = self.last_known_subject
-                        if text_of(arg).lower() == 'they': current_last_known_subject = re.sub(r'^this ', 'these ', self.last_known_subject)
+                        current_last_known_subject = self._last_known_subject
+                        if text_of(arg).lower() == 'they': current_last_known_subject = re.sub(r'^this ', 'these ', self._last_known_subject)
                         arg.setAttribute('data-old-text', text_of(arg))
                         arg.setAttribute('data-last-known-subject','true')
                         arg.firstChild.data = current_last_known_subject
@@ -643,6 +661,9 @@ class ReportingObligationsFinder():
         #start=time.time()
         list_xml=[]
         
+        #tokenizer for length check
+        self._initialize_tokenizer()
+        
         if main_sentence:
         
             self.update_pending_location_names( sentence )
@@ -656,11 +677,17 @@ class ReportingObligationsFinder():
 
         #start_parsing=time.time()
         #parse the sentence with ALLEN_NLP model:
-        try:
-            parsed_sentence=self.parse_sentence( sentence )
-        except RuntimeError:
-            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
+        
+        if len( sentence.split() )>400 or len(self._tokenizer.split_words( sentence ))>500:
+            print( f'Not parsing "{sentence}". Please make sure number of tokens in sentence is < 512.' )
             return []
+        
+        #if len( sentence ) > 2000 or len( sentence.split())>300 :
+        #    print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 300 and number of chars<2000.' )
+        #    return []
+        
+        parsed_sentence=self.parse_sentence( sentence )
+
         #print( f"Total parsing time: {time.time()-start_parsing} s",   )
 
         verbs=self.filter_data_to_relevant_verbs( parsed_sentence )
@@ -696,22 +723,23 @@ class ReportingObligationsFinder():
         
         return list_xml
     
-    def process_sentences( self, ListSofaID: str='ListView'  ) ->list:
+    def process_sentences( self, cas: Cas, ListSofaID: str='ListView'  ) ->list:
         
         '''
-        Method iterates over self.sentences. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned. 
+        Method iterates over sentences in ListView of the Cas. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned. 
         Subsentences, i.e. sentence in between ❮  ❯ are subsentences, and if they contain a reporting obligation, they are also parsed.
         :param spacy_path: String. Path to spacy model. 
         :return: List.
         '''
-        
+                
         self._list_xml=[]
-
-        #sentences=self.cas.get_view( ListSofaID ).sofa_string.split( "\n" )
+        self._last_known_subject= ''
+        #remember the current location ( i.e. part/annex/title/chapter/... )
+        self._pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
         
         offsets=[]
         sentences=[]
-        for item in self.cas.get_view( ListSofaID ).sofa_string.split( "\n" ):
+        for item in cas.get_view( ListSofaID ).sofa_string.split( "\n" ):
             offset=eval(item.split( "|" )[-1])
             assert type( offset ) ==tuple
             offsets.append( offset )
@@ -721,7 +749,7 @@ class ReportingObligationsFinder():
         assert( len( offsets ) == len( sentences ) )
         
         for sentence, offset in zip(sentences, offsets):
-            
+                        
             sentence=sentence.rstrip( '\r\n' )
             subsentence = re.sub(r'(^[^❮]+|[^❯]+$)',r'', sentence)  #finds everything between " ❮ ❯ " ==>the main sentence
             if len(subsentence) > 0: sentence = sentence.replace(subsentence, '', 1)  #remove everything inside " ❮ ❯ " from the string
@@ -749,7 +777,7 @@ class ReportingObligationsFinder():
                 
         return self._list_xml
     
-    def add_xml_to_cas( self , template_path: str , ROSofaID: str='ReportingObligationsView' ):
+    def add_xml_to_cas( self , cas: Cas, template_path: str , ROSofaID: str='ReportingObligationsView' ):
         
         '''
         Method creates the view ROSofaID, and adds the xml elements from the list of xml's (xml.dom.minidom.Document) elements as sofa to the view (html), using template_path.
@@ -758,7 +786,7 @@ class ReportingObligationsFinder():
         :return: None.
         '''
         
-        self.cas.create_view(ROSofaID)
+        cas.create_view(ROSofaID)
         
         list_xml_string=[]
         for xml in self._list_xml:
@@ -766,7 +794,7 @@ class ReportingObligationsFinder():
                 
         html_template=open(  template_path ).read()
                 
-        self.cas.get_view( ROSofaID ).sofa_string=html_template + "\n".join( list_xml_string )
+        cas.get_view( ROSofaID ).sofa_string=html_template + "\n".join( list_xml_string )
         
     def print_to_html( self, template_path:str, output_path:str):
         
@@ -789,4 +817,6 @@ class ReportingObligationsFinder():
         
         with open( output_path , "w"  ) as f:
             f.write( html_template + "\n".join( list_xml_string )  )
+            
+
             
