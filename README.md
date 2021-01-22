@@ -47,14 +47,9 @@ transformer.add_list_view( OldSofaID='html2textView', NewSofaID = 'ListView'  )
 Given a CAS with a `ListView`, a `ReportingObligationsView` can be added running the following commands from a Python interpreter:
 
 ```
-from allennlp.predictors.predictor import Predictor
-import spacy
-allen_nlp_srl_model = Predictor.from_path( ALLEN_NLP_SRL_PATH )
-nlp=spacy.load( SPACY_PATH )
-
-reporting_obligations_finder = ReportingObligationsFinder( CAS, allen_nlp_srl_model, nlp  ) \
-reporting_obligations_finder.process_sentences( ListSofaID='ListView'  ) \
-reporting_obligations_finder.add_xml_to_cas( TEMPLATE_PATH, ROSofaID='ReportingObligationsView' ) \
+reporting_obligations_finder = ReportingObligationsFinder( ALLEN_NLP_SRL_PATH, SPACY_PATH  ) \
+reporting_obligations_finder.process_sentences(CAS, ListSofaID='ListView'  ) \
+reporting_obligations_finder.add_xml_to_cas( CAS, TEMPLATE_PATH, ROSofaID='ReportingObligationsView' ) \
 ```
 
 With ALLEN_NLP_SRL_PATH, SPACY_PATH, TEMPLATE_PATH the paths to the AllenNLP/Spacy model and the html-template, repectively. 
