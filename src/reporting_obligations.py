@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Tuple
+from typing import Tuple, List
 import torch
 from xml.dom.minidom import parseString
 from allennlp.data.tokenizers.word_splitter import SpacyWordSplitter
@@ -120,15 +120,15 @@ class ReportingObligationsFinder():
             if when_clause_subject and looks_like_arg0(when_clause_subject):
                 self._last_known_subject = when_clause_subject
               
-    def parse_sentence(  self, input_sentence:str ) -> dict:
+    def parse_sentence(  self, input_sentence:List[str] ) -> dict:
         
         '''
         Given a sentence, method parses the sentences using AllenNLP parser (self.bert_model) 
-        :param input_sentence: String.
+        :param input_sentence: Tokenized sentence. List of strings (tokens).
         :return parsed_sentence: dict.
         '''
-        parsed_sentence=self.bert_model.predict(
-            sentence=input_sentence
+        parsed_sentence=self.bert_model.predict_tokenized(
+            tokenized_sentence=input_sentence
         )
         
         return parsed_sentence
@@ -686,11 +686,14 @@ class ReportingObligationsFinder():
         #start_parsing=time.time()
         #parse the sentence with ALLEN_NLP model:
         
-        if len( sentence.split() )>400 or len(self._tokenizer.split_words( sentence ))>500:
+        tokenized_sentence=self._tokenizer.split_words( sentence )
+        tokenized_sentence=[str( word ) for word in tokenized_sentence]
+        
+        if len( sentence.split() )>400 or len( tokenized_sentence  )>500:
             print( f'Not parsing "{sentence}". Please make sure number of tokens in sentence is < 512.' )
             return []
                 
-        parsed_sentence=self.parse_sentence( sentence )
+        parsed_sentence=self.parse_sentence( tokenized_sentence )
 
         #print( f"Total parsing time: {time.time()-start_parsing} s",   )
 
