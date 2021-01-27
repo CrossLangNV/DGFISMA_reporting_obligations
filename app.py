@@ -31,7 +31,7 @@ def add_reporting_obligations():
         abort(400) 
     output_json={}
     
-    print( "processing:" request.json[ "doc_id" ] )
+    print( "processing:", request.json[ "doc_id" ] )
     
     if ('cas_content' not in request.json) or ( 'content_type' not in request.json ):
         print( "'cas_content' and/or 'content type' field missing" )
