@@ -4,5 +4,6 @@
 /bert-base-srl-*.tar.gz
 /tests/test_files/models/bert_model/*.gz
 /tests/test_files/models/spacy_model/spacy-textcat
+/test/test_files/testing_bug*
 .ipynb_checkpoints/
 __pycache__/
