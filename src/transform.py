@@ -9,17 +9,20 @@ from src.utils import SeekableIterator
 
 class ListTransformer():
     
-    def __init__( self, cas: Cas ):
+    def __init__( self, cas: Cas, process_user_annotations:bool=False ):
         
         '''
         Add a list view to the cas.
         :param cas: Cas. Cas object (mutable object).
+        :param process_user_annotations: bool. If set to True, only user annotations will be processed (reporting_obligation_type).
         '''
         self.cas=cas
+        self.process_user_annotations=process_user_annotations
         
     def add_list_view( self , OldSofaID: str, NewSofaID: str='ListView', \
                                       value_between_tagtype: str="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
-                                      paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph" ):
+                                      paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph", \
+                                      reporting_obligation_type:str="de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Reportingobligation"):
         
         '''
         The method will get all value_between_tagtype (text in between tags), detect all lists (enumeration),
@@ -30,12 +33,31 @@ class ListTransformer():
         :param NewSofaID: String. Name of the new sofa.
         :param value_between_tagtype: String. 
         :param paragraph_type: String.
+        :param reporting_obligation_type: String.
         :return: None. 
         '''
         
-        value_between_tagtype_generator=self.cas.get_view( OldSofaID ).select( value_between_tagtype )        
+        if self.process_user_annotations:
+            
+            RO_users=self.cas.get_view( OldSofaID ).select( reporting_obligation_type )
+
+            tags_users=[]
+            end=0
+            for RO_user in RO_users:
+                if RO_user.begin>=end: #check that the RO user annotations do not overlap
+                    tags_users+=list(self.cas.get_view( OldSofaID ).select_covered( value_between_tagtype, RO_user   ))
+                    end=RO_user.end
+                else: 
+                    print( f"Reporting obligation annotated by user {RO_user.user} overlaps with another reporting obligation user annotation. \
+                    Please remove overlapping user annotations."   )
+
+            seek_vbtt=SeekableIterator( iter( tags_users ) )
+            
+        else:
         
-        seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
+            value_between_tagtype_generator=self.cas.get_view( OldSofaID ).select( value_between_tagtype )        
+        
+            seek_vbtt=SeekableIterator( iter(value_between_tagtype_generator) )
         
         lines, offsets=get_other_lines( self.cas , OldSofaID, seek_vbtt, 'root', paragraph_type=paragraph_type )
 
@@ -58,50 +80,6 @@ class ListTransformer():
         self.cas.create_view(NewSofaID)
         
         self.cas.get_view( NewSofaID).sofa_string = "\n".join( lines_offsets )
-        
-        
-    def add_list_view_user( self , OldSofaID: str, NewSofaID: str='ListView', \
-                                      value_between_tagtype: str="com.crosslang.uimahtmltotext.uima.type.ValueBetweenTagType", \
-                                      paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph", \
-                                      reporting_obligation_type:str="de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Reportingobligation"):
-        
-        RO_users=self.cas.get_view( OldSofaID ).select( reporting_obligation_type )
-        
-        tags_users=[]
-        end=0
-        for RO_user in RO_users:
-            if RO_user.begin>end or end==0: #check that the RO user annotations do not overlap
-                tags_users+=list(self.cas.get_view( OldSofaID ).select_covered( value_between_tagtype, RO_user   ))
-                end=RO_user.end
-            else: 
-                print( f"Reporting obligation annotated by user {RO_user.user} overlaps with another reporting obligation user annotation. \
-                Please remove overlapping user annotations."   )
-
-        seek_vbtt=SeekableIterator( iter( tags_users ) )
-
-        lines, offsets=get_other_lines( self.cas , OldSofaID, seek_vbtt, 'root', paragraph_type=paragraph_type )
-        
-        flatten_offsets( offsets )
-        
-        lines, offsets =postprocess_nested_lines( lines, offsets  )
-
-        assert len( lines ) == len( offsets )
-        
-        transformed_lines, transformed_lines_offsets=transform_lines( lines, offsets )
-        
-        assert len( transformed_lines ) == len( transformed_lines_offsets )
-        
-        lines_offsets=[]
-        for line, offset in zip( transformed_lines, transformed_lines_offsets  ):
-            lines_offsets.append(line + "|" + str( offset ))
-
-        #add the transformed lines to the cas
-        
-        self.cas.create_view(NewSofaID)
-        
-        self.cas.get_view( NewSofaID).sofa_string = "\n".join( lines_offsets )
-        
-        
 
 def get_other_lines( cas: Cas, SofaID: str , value_between_tagtype_seekable_generator: Generator, root_paragraph:str='root', \
                     paragraph_type: str= "de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph", end=-1,   ) -> Tuple[list,list]: 

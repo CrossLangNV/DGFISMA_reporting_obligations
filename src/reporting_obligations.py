@@ -1,11 +1,15 @@
 import os
 import re
-from typing import Tuple, List
+from typing import Tuple, List, Union
 import torch
 from xml.dom.minidom import parseString
 from allennlp.data.tokenizers.word_splitter import SpacyWordSplitter
-
 from allennlp.predictors.predictor import Predictor
+from allennlp.common.util import sanitize
+from allennlp.data.dataset import Batch
+from allennlp.common.util import JsonDict
+
+from spacy.tokens import Doc
 
 import spacy
 from cassis import Cas
@@ -119,20 +123,36 @@ class ReportingObligationsFinder():
             when_clause_subject = re.sub(r'^(an?|one|any( such( an?)?)?|such( an?)?) ', 'this ', when_clause_subject, re.I).strip()
             if when_clause_subject and looks_like_arg0(when_clause_subject):
                 self._last_known_subject = when_clause_subject
-              
-    def parse_sentence(  self, input_sentence:List[str] ) -> dict:
-        
+                            
+    def parse_sentence( self, tokenized_sentence: List[str]) -> Union[None,JsonDict]:
+
         '''
         Given a sentence, method parses the sentences using AllenNLP parser (self.bert_model) 
         :param input_sentence: Tokenized sentence. List of strings (tokens).
-        :return parsed_sentence: dict.
+        :return parsed_sentence: JsonDic.
         '''
-        parsed_sentence=self.bert_model.predict_tokenized(
-            tokenized_sentence=input_sentence
-        )
         
-        return parsed_sentence
-                
+        spacy_doc = Doc(self._tokenizer.spacy.vocab, words=tokenized_sentence)
+        for pipe in filter(None, self._tokenizer.spacy.pipeline):
+            pipe[1](spacy_doc)
+
+        tokens = [token for token in spacy_doc]
+        instances = self.bert_model.tokens_to_instances(tokens)
+
+        if not instances:
+            return sanitize({"verbs": [], "words": tokens})
+        
+        #do length check:
+        dataset = Batch( instances )
+
+        dataset.index_instances( self.bert_model._model.vocab  )
+        
+        if dataset.as_tensor_dict()['tokens']['tokens'].shape[1] > 512: #length>512 not valid->index out of bounds
+            return None
+        else:
+            return self.bert_model.predict_instances(instances)
+
+
     @staticmethod
     def check_if_interesting_sentence_and_process_via_regexes( input_sentence:str ) -> str:
         
@@ -688,14 +708,15 @@ class ReportingObligationsFinder():
         
         tokenized_sentence=self._tokenizer.split_words( sentence )
         tokenized_sentence=[str( word ) for word in tokenized_sentence]
-        
         if len( sentence.split() )>400 or len( tokenized_sentence  )>500:
-            print( f'Not parsing "{sentence}". Please make sure number of tokens in sentence is < 512.' )
+            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
             return []
                 
         parsed_sentence=self.parse_sentence( tokenized_sentence )
-
-        #print( f"Total parsing time: {time.time()-start_parsing} s",   )
+        
+        if not parsed_sentence:
+            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
+            return []
 
         verbs=self.filter_data_to_relevant_verbs( parsed_sentence )
 
@@ -824,6 +845,4 @@ class ReportingObligationsFinder():
         
         with open( output_path , "w"  ) as f:
             f.write( html_template + "\n".join( list_xml_string )  )
-            
-
             
