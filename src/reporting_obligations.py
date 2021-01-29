@@ -14,6 +14,8 @@ from spacy.tokens import Doc
 import spacy
 from cassis import Cas
 
+from xml.dom.minidom import Document
+
 from src.keywords_nouns_verbs import ALL_ARG2_KEYWORDS, PLURAL_OR_NODET_ARG2_KEYWORDS, INTERESTING_VERBS, OBLIGATION_VERBS, INTERESTING_NOUNS, OBLIGATION_NOUNS, INTERESTING_NOUNS_VALID_VERBS_DIRECT, INTERESTING_NOUNS_VALID_VERBS_SUBJ, PENDING_LOCATION_TYPES
 
 from src.utils import looks_like_arg0, looks_like_arg2, match_class_in_list, match_class , update_class, text_of
@@ -282,13 +284,11 @@ class ReportingObligationsFinder():
 
             verbs.append( ( verb_data, is_relevant_case_based_on_verb , is_relevant_case  )  )
 
-            #print( verb  , "( is it a relevant case):",  is_relevant_case )
-
         return verbs
 
     
     @staticmethod
-    def convert_to_xml_and_fix_tags_hand_crafted( verb_tuple: Tuple[ dict, bool, bool ] ,  subsentence: str  ):
+    def convert_to_xml_and_fix_tags_hand_crafted( verb_tuple: Tuple[ dict, bool, bool ] ,  subsentence: str  ) -> Document:
         
         '''
         Input is a tuple (dict, boolean, boolean) (element from the list generated via staticmethod filter_data_to_relevant_verbs). dict is converted to xml. Some tags are fixed using hand crafted rules.
@@ -521,7 +521,7 @@ class ReportingObligationsFinder():
         return srl_dom_output
     
     
-    def predict_obligation_frequency( self, input_sentence:str , srl_dom_output  ):
+    def predict_obligation_frequency( self, input_sentence:str , srl_dom_output: Document ) -> Document:
         
         '''
         Input is an xml element, and the sentence the xml element (verb+context) was part of. Method calculates the obligation frequence using spacy model (self.nlp), and accordingly adds tags to the xml element.
@@ -529,16 +529,8 @@ class ReportingObligationsFinder():
         :param srl_dom_output: xml.dom.minidom.Document.
         :return: xml.dom.minidom.Document. 
         '''
-        
-        def get_verb( srl_dom_output  ):
-            verb=''
-            for item in srl_dom_output.getElementsByTagName( "span" ):
-                if item.getAttribute('class')=='V':
-                    verb=text_of(item)
-                    return verb
-            return verb
-        
-        verb=get_verb( srl_dom_output )
+    
+        verb=self._get_verb( srl_dom_output )
         
         # deduce obligation frequency from full paragraph
         paragraph_frequence_predictions = self.nlp(input_sentence)
@@ -592,13 +584,15 @@ class ReportingObligationsFinder():
         return srl_dom_output
     
     
-    def co_reference_resolution(  self, srl_dom_output ):
+    def co_reference_resolution(  self, srl_dom_output: Document ) -> Document:
 
         '''
         Input is an xml element. Method solves co-reference resolution, and changes tags accordingly. For this it uses self._last_known_subject. 
         :param srl_dom_output: xml.dom.minidom.Document.
         :return: xml.dom.minidom.Document. 
         '''
+        
+        verb=self._get_verb( srl_dom_output )
         
         when_clause = None
         when_clause_uppercase = False
@@ -743,7 +737,7 @@ class ReportingObligationsFinder():
             #process the paragraph (sentence) and 'verb' with spacy model
             srl_dom_output=self.predict_obligation_frequency( sentence, srl_dom_output  )
 
-            srl_dom_output=self.co_reference_resolution(  srl_dom_output  )
+            srl_dom_output=self.co_reference_resolution( srl_dom_output  )
 
             list_xml.append( srl_dom_output )
         
@@ -846,3 +840,13 @@ class ReportingObligationsFinder():
         with open( output_path , "w"  ) as f:
             f.write( html_template + "\n".join( list_xml_string )  )
             
+    @staticmethod
+    def _get_verb( srl_dom_output  ):
+        #helper function
+        verb=''
+        for item in srl_dom_output.getElementsByTagName( "span" ):
+            if item.getAttribute('class')=='V':
+                verb=text_of(item)
+                return verb
+        return verb
+    
