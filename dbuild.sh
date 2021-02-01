@@ -1,5 +1,4 @@
 nvidia-docker build \
---no-cache \
 --build-arg BERT_PATH=tests/test_files/models/bert_model/bert-base-srl-2019.06.17.tar.gz \
 --build-arg SPACY_PATH=tests/test_files/models/spacy_model/spacy-textcat \
 --build-arg TEMPLATE_PATH=tests/test_files/templates/out.html.template \

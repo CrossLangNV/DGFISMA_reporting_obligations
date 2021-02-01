@@ -52,7 +52,7 @@ def add_reporting_obligations():
         typesystem = load_typesystem(f)
 
     #load the cas:
-    cas=load_cas_from_xmi( decoded_cas_content, typesystem=typesystem  )
+    cas=load_cas_from_xmi( decoded_cas_content, typesystem=typesystem, trusted=True  )
 
     if request.json[ 'content_type'] == 'pdf' or request.json[ 'content_type'] == 'html' or request.json[ 'content_type'] == 'xhtml':
 

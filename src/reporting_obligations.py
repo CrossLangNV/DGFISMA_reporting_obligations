@@ -33,7 +33,135 @@ class ReportingObligationsFinder():
                     
         self.load_bert_model( bert_model_path, gpu )
         self.load_spacy_model( spacy_model_path )
+
+    def process_sentences( self, cas: Cas, ListSofaID: str='ListView'  ) -> List[Document]:
         
+        '''
+        Method iterates over sentences in ListView of the Cas. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned. 
+        Subsentences, i.e. sentence in between ❮  ❯ are subsentences, and if they contain a reporting obligation, they are also parsed.
+        :param spacy_path: String. Path to spacy model. 
+        :return: List.
+        '''
+                
+        self._list_xml=[]
+        self._last_known_subject= ''
+        #remember the current location ( i.e. part/annex/title/chapter/... )
+        self._pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
+        
+        offsets=[]
+        sentences=[]
+        for item in cas.get_view( ListSofaID ).sofa_string.split( "\n" ):
+            offset=eval(item.split( "|" )[-1])
+            assert type( offset ) ==tuple
+            offsets.append( offset )
+            sentences.append( "|".join(item.split( "|" )[:-1]) )
+
+        #sanity check
+        assert( len( offsets ) == len( sentences ) )
+        
+        for sentence, offset in zip(sentences, offsets):
+            
+            if len( sentence.split()) > 5000 : #do not process extremely large sentences
+                print( f"Not processing {sentence}, make sure number of tokens in non-tokenized sentence is smaller than 5000." )
+                continue
+                
+            sentence=sentence.rstrip( '\r\n' )
+            subsentence = re.sub(r'(^[^❮]+|[^❯]+$)',r'', sentence)  #finds everything between " ❮ ❯ " ==>the main sentence
+            if len(subsentence) > 0: sentence = sentence.replace(subsentence, '', 1)  #remove everything inside " ❮ ❯ " from the string
+    
+            #process the main_sentence
+            list_xml_sentence=self.process_sentence( sentence, subsentence, True )
+            
+            #set the offset
+            [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_sentence]
+            [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_sentence]
+
+            self._list_xml+=list_xml_sentence
+            
+            #process subsentence:
+            
+            if " shall " in subsentence:
+                list_subsentences = re.sub(r' ‖ and/or ', r' and/or ', subsentence).lstrip('❮').rstrip('❯').split(' ‖ ')
+                for item_subsentence in list_subsentences:
+                    list_xml_subsentence=self.process_sentence( item_subsentence, '', False )
+                    #set the offset
+                    [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_subsentence]
+                    [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_subsentence]
+                    self._list_xml+=list_xml_subsentence
+                
+        return self._list_xml
+
+    def process_sentence( self, sentence:str, subsentence:str, main_sentence: bool=True )-> List[Document]:
+        
+        '''
+        Method processes a sentence, either a main sentence or a subsentence (in between ❮  ❯, see transform.py ).
+        :param sentence: String. Sentence to process
+        :param subsentence: String. Subsentence, i.e. sentence in between ❮  ❯. 
+        :param main_sentence: Boolean. If it is main sentence or subsentence. If it is subsentence, then we do not update the last known subject and location.
+        :return: List.
+        '''
+
+        list_xml=[]
+        
+        #tokenizer for length check
+        self._initialize_tokenizer()
+        
+        if main_sentence:
+        
+            self.update_pending_location_names( sentence )
+        
+            self.update_last_known_subject( sentence )
+        
+        sentence=self.check_if_interesting_sentence_and_process_via_regexes( sentence )
+
+        if not sentence: #if not an interesting sentence (i.e., it is a definition, it does not contain interesting verbs), then continue
+            return []
+
+        #parse the sentence with ALLEN_NLP model:
+        
+        tokenized_sentence=self._tokenizer.split_words( sentence )
+        tokenized_sentence=[str( word ) for word in tokenized_sentence]
+        if len( sentence.split() )>400 or len( tokenized_sentence  )>500:
+            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
+            return []
+                
+        parsed_sentence=self.parse_sentence( tokenized_sentence )
+        
+        if not parsed_sentence:
+            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
+            return []
+
+        verbs=self.filter_data_to_relevant_verbs( parsed_sentence )
+
+        #check if verbs is not empty:
+        if not verbs:
+            return []
+
+        for verb in verbs:
+
+            is_relevant_case=verb[2]
+
+            if not is_relevant_case:
+                continue
+
+            #if relevant verb, and if it is the first interesting verb in this section/paragraph, ..., then save the location (section/paragraph) as an xml element in list_xml:
+            list_location_xml=self.get_and_flush_pending_location_names()
+            list_xml+=list_location_xml
+
+            srl_dom_output=self.convert_to_xml_and_fix_tags_hand_crafted(  verb, subsentence  )
+
+            if not srl_dom_output:
+                continue
+            
+            #process the paragraph (sentence) and 'verb' with spacy model
+            srl_dom_output=self.predict_obligation_frequency( sentence, srl_dom_output  )
+
+            srl_dom_output=self.co_reference_resolution( srl_dom_output  )
+
+            list_xml.append( srl_dom_output )
+                
+        return list_xml
+    
     def load_bert_model( self, bert_model_path: str, gpu:int  ):
         
         if not hasattr(self, 'bert_model'):
@@ -670,134 +798,7 @@ class ReportingObligationsFinder():
 
         return srl_dom_output
     
-    def process_sentence( self, sentence:str, subsentence:str, main_sentence: bool=True ):
-        
-        '''
-        Method processes a sentence, either a main sentence or a subsentence (in between ❮  ❯, see transform.py ).
-        :param sentence: String. Sentence to process
-        :param subsentence: String. Subsentence, i.e. sentence in between ❮  ❯. 
-        :param main_sentence: Boolean. If it is main sentence or subsentence. If it is subsentence, then we do not update the last known subject and location.
-        :return: List.
-        '''
-        #import time
-        #start=time.time()
-        list_xml=[]
-        
-        #tokenizer for length check
-        self._initialize_tokenizer()
-        
-        if main_sentence:
-        
-            self.update_pending_location_names( sentence )
 
-            self.update_last_known_subject( sentence )
-
-        sentence=self.check_if_interesting_sentence_and_process_via_regexes( sentence )
-
-        if not sentence: #if not an interesting sentence (i.e., it is a definition, it does not contain interesting verbs), then continue
-            return []
-
-        #start_parsing=time.time()
-        #parse the sentence with ALLEN_NLP model:
-        
-        tokenized_sentence=self._tokenizer.split_words( sentence )
-        tokenized_sentence=[str( word ) for word in tokenized_sentence]
-        if len( sentence.split() )>400 or len( tokenized_sentence  )>500:
-            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
-            return []
-                
-        parsed_sentence=self.parse_sentence( tokenized_sentence )
-        
-        if not parsed_sentence:
-            print( f'Could not parse "{sentence}". Please make sure number of tokens in sentence is < 512.' )
-            return []
-
-        verbs=self.filter_data_to_relevant_verbs( parsed_sentence )
-
-        #check if verbs is not empty:
-        if not verbs:
-            return []
-
-        for verb in verbs:
-
-            is_relevant_case=verb[2]
-
-            if not is_relevant_case:
-                continue
-
-            #if relevant verb, and if it is the first interesting verb in this section/paragraph, ..., then save the location (section/paragraph) as an xml element in list_xml:
-            list_location_xml=self.get_and_flush_pending_location_names()
-            list_xml+=list_location_xml
-
-            srl_dom_output=self.convert_to_xml_and_fix_tags_hand_crafted(  verb, subsentence  )
-
-            if not srl_dom_output:
-                continue
-            
-            #process the paragraph (sentence) and 'verb' with spacy model
-            srl_dom_output=self.predict_obligation_frequency( sentence, srl_dom_output  )
-
-            srl_dom_output=self.co_reference_resolution( srl_dom_output  )
-
-            list_xml.append( srl_dom_output )
-        
-        #print( f"Total processing time: {time.time()-start} s",   )
-        
-        return list_xml
-    
-    def process_sentences( self, cas: Cas, ListSofaID: str='ListView'  ) ->list:
-        
-        '''
-        Method iterates over sentences in ListView of the Cas. Sentences are parsed using allenNLP model. Interesting verbs and context in each sentence are converted to an xml element. Tags are fixed using hand crafted rules. Obligation frequency (using Spacy model) and co-reference resolution is also taken care of (via updating tags in the xml element). xml elements are appended to a list and returned. 
-        Subsentences, i.e. sentence in between ❮  ❯ are subsentences, and if they contain a reporting obligation, they are also parsed.
-        :param spacy_path: String. Path to spacy model. 
-        :return: List.
-        '''
-                
-        self._list_xml=[]
-        self._last_known_subject= ''
-        #remember the current location ( i.e. part/annex/title/chapter/... )
-        self._pending_location_names=list(map(lambda x: '', PENDING_LOCATION_TYPES))  
-        
-        offsets=[]
-        sentences=[]
-        for item in cas.get_view( ListSofaID ).sofa_string.split( "\n" ):
-            offset=eval(item.split( "|" )[-1])
-            assert type( offset ) ==tuple
-            offsets.append( offset )
-            sentences.append( "|".join(item.split( "|" )[:-1]) )
-
-        #sanity check
-        assert( len( offsets ) == len( sentences ) )
-        
-        for sentence, offset in zip(sentences, offsets):
-                        
-            sentence=sentence.rstrip( '\r\n' )
-            subsentence = re.sub(r'(^[^❮]+|[^❯]+$)',r'', sentence)  #finds everything between " ❮ ❯ " ==>the main sentence
-            if len(subsentence) > 0: sentence = sentence.replace(subsentence, '', 1)  #remove everything inside " ❮ ❯ " from the string
-    
-            #process the main_sentence
-            list_xml_sentence=self.process_sentence( sentence, subsentence, True )
-            
-            #set the offset
-            #for xml_item in list_xml_sentence:
-            [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_sentence]
-            [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_sentence]
-
-            self._list_xml+=list_xml_sentence
-            
-            #process subsentence:
-            
-            if " shall " in subsentence:
-                list_subsentences = re.sub(r' ‖ and/or ', r' and/or ', subsentence).lstrip('❮').rstrip('❯').split(' ‖ ')
-                for item_subsentence in list_subsentences:
-                    list_xml_subsentence=self.process_sentence( item_subsentence, '', False )
-                    #set the offset
-                    [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_subsentence]
-                    [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_subsentence]
-                    self._list_xml+=list_xml_subsentence
-                
-        return self._list_xml
     
     def add_xml_to_cas( self , cas: Cas, template_path: str , ROSofaID: str='ReportingObligationsView' ):
         
