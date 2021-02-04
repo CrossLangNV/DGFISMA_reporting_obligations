@@ -64,7 +64,7 @@ class ReportingObligationsFinder():
             if len( sentence.split()) > 5000 : #do not process extremely large sentences
                 print( f"Not processing {sentence}, make sure number of tokens in non-tokenized sentence is smaller than 5000." )
                 continue
-                
+                            
             sentence=sentence.rstrip( '\r\n' )
             subsentence = re.sub(r'(^[^❮]+|[^❯]+$)',r'', sentence)  #finds everything between " ❮ ❯ " ==>the main sentence
             if len(subsentence) > 0: sentence = sentence.replace(subsentence, '', 1)  #remove everything inside " ❮ ❯ " from the string
@@ -88,7 +88,7 @@ class ReportingObligationsFinder():
                     [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_subsentence]
                     [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_subsentence]
                     self._list_xml+=list_xml_subsentence
-                
+            
         return self._list_xml
 
     def process_sentence( self, sentence:str, subsentence:str, main_sentence: bool=True )-> List[Document]:
