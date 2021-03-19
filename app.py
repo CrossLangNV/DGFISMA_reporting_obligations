@@ -67,7 +67,7 @@ def add_reporting_obligations():
         reporting_obligations_finder.add_xml_to_cas( cas, TEMPLATE_PATH, ROSofaID='ReportingObligationsView' )
                 
     else:
-        print( f"content type { request.json[ 'content_type'] } not supported by paragraph annotation app" )   
+        print( f"content type { request.json[ 'content_type'] } not supported by reporting obligations app" )   
         output_json['cas_content']=request.json['cas_content']
         output_json['content_type']=request.json[ 'content_type' ]
         return output_json   

@@ -59,6 +59,8 @@ class ReportingObligationsFinder():
         #sanity check
         assert( len( offsets ) == len( sentences ) )
         
+        RO_index=0
+        
         for sentence, offset in zip(sentences, offsets):
             
             if len( sentence.split()) > 5000 : #do not process extremely large sentences
@@ -72,6 +74,10 @@ class ReportingObligationsFinder():
             #process the main_sentence
             list_xml_sentence=self.process_sentence( sentence, subsentence, True )
             
+            #set the index of the RO:
+            for xml_item in list_xml_sentence:
+                xml_item.lastChild.setAttribute( 'RO_idx', str(RO_index))
+                RO_index+=1
             #set the offset
             [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_sentence]
             [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_sentence]
@@ -84,6 +90,10 @@ class ReportingObligationsFinder():
                 list_subsentences = re.sub(r' ‖ and/or ', r' and/or ', subsentence).lstrip('❮').rstrip('❯').split(' ‖ ')
                 for item_subsentence in list_subsentences:
                     list_xml_subsentence=self.process_sentence( item_subsentence, '', False )
+                    #set the index of the RO
+                    for xml_item in list_xml_sentence:
+                        xml_item.lastChild.setAttribute( 'RO_idx', str(RO_index))
+                        RO_index+=1
                     #set the offset
                     [xml_item.lastChild.setAttribute( 'original_document_begin', str(offset[0])) for xml_item in list_xml_subsentence]
                     [xml_item.lastChild.setAttribute( 'original_document_end', str(offset[1])) for xml_item in list_xml_subsentence]
