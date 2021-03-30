@@ -6,4 +6,8 @@
 /tests/test_files/models/spacy_model/spacy-textcat
 /tests/test_files/testing_bug*
 .ipynb_checkpoints/
+*.ipynb
+!notebooks/unit_tests.ipynb
+!notebooks/test_transform_RO.ipynb
+DEPRECATED/
 __pycache__/
