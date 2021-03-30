@@ -1,0 +1,37 @@
+ANNEX I
+Formulae for the determination of the liquidity buffer composition
+1. Credit institution shall use the formulae laid down in this Annex to determine the composition of their  liquidity buffer in accordance with Article 17.
+2. Calculation of the liquidity buffer: as of the calculation date, the liquidity buffer of the credit institution shall be equal to:
+(a) the level 1 asset amount; plus
+(b) the level 2A asset amount; plus
+(c) the level 2B asset amount;
+minus the lesser of:
+(d) the sum of (a), (b), and (c); or
+(e) the ‘excess liquid assets amount’ as calculated in accordance with paragraphs 3 and 4 of this Annex.
+3. ‘Excess liquid assets’ amount: this amount shall be comprised of the components defined herein:
+(a) an adjusted non-covered bond level 1 assets amount, which shall be equal to the value of all level 1 liquid assets, excluding level&nbsp;1 covered bonds, that would be held by the credit institution upon the unwind of any secured funding transaction, secured lending transaction, asset exchange or collateralised derivatives transaction that matures within 30&nbsp;calendar days from the calculation date and where the credit institution and the counterparty exchange liquid assets on at least one leg of the transaction;
+(b) an adjusted level 1 covered bonds amount, which shall be equal to the value post-haircuts of all level 1 covered bonds that would be held by the credit institution upon the unwind of any secured funding transaction, secured lending transaction, asset exchange or collateralised derivatives transaction that matures within 30&nbsp;calendar days from the calculation date and where the credit institution and the counterparty exchange liquid assets on at least one leg of the transaction;
+(c) adjusted level 2A asset amount, which shall be equal to the value post-haircuts of all level 2A assets that would be held by the credit institution upon the unwind of any secured funding transaction, secured lending transaction, asset exchange or collateralised derivatives transaction that matures within 30&nbsp;calendar days from the calculation date and where the credit institution and the counterparty exchange liquid assets on at least one leg of the transaction; and
+(d) adjusted level 2B asset amount, which shall be equal to the value post-haircuts of all level 2B assets that would be held by the credit institution upon the unwind of any secured funding transaction, secured lending transaction, asset exchange or collateralised derivatives transaction that matures within 30 calendar days from the calculation date and where the credit institution and the counterparty exchange liquid assets on at least one leg of the transaction.
+4. Calculation of the ‘excess liquid assets amount’: this amount shall be equal to:
+(a) the adjusted non-covered bond level 1 asset amount; plus
+(b) the adjusted level 1 covered bond amount; plus
+(c) the adjusted level 2A asset amount; plus
+(d) the adjusted level 2B asset amount;
+minus the lesser of:
+(e) the sum of (a),(b),(c) and (d);
+(f) 100/30 times (a);
+(g) 100/60 times the sum of (a) and (b);
+(h) 100/85 times the sum of (a), (b) and (c).
+5. The composition of the liquidity buffer after taking into account the unwind of any secured funding transaction, secured lending transaction, asset exchange or collateralised derivatives transaction and the application of the above caps in accordance with Article 17 shall be determined as follows:
+a″ (the adjusted non-covered bond level 1 asset amount after cap application)
+=&nbsp;a (the adjusted non-covered bond level 1 asset amount before cap application)
+b″ (the adjusted covered bond level 1asset amount after cap application)
+=&nbsp;MIN(b, a70/30)
+where b = the adjusted covered bond level 1 asset amount before cap application
+c″ (the adjusted level 2A asset amount after cap application)
+=&nbsp;MIN(c, (a + b″)40/60, MAX(a70/30 – b″, 0))
+where c = the adjusted level 2A asset amount before cap application
+d″ (the adjusted level 2B asset amount after cap application)
+=&nbsp;MIN (d, (a + b″ + c″)15/85, MAX((a + b″)40/60 – c″, 0), MAX(70/30a – b″ – c″, 0))
+Where d = the adjusted level 2B asset amount before cap application)

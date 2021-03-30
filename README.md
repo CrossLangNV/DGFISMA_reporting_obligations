@@ -1,33 +1,64 @@
-To use this project:
+Instructions
+------------
 
-1. clone this repository
-2. install dependencies 'torch' (1.4.0), 'spacy' (2.1.9), 'allennlp' (0.9.0)
-3. follow the instructions below to download the models
+use "dbuild.sh" to build the docker image <br />
+use "dcli.sh" to start a docker container
 
-When this is done, you need to download the models:
+Don't forget to:
 
-1. download `bert-base-srl-2019.06.17.tar.gz` from the latest github release
-2. download `spacy-textcat.zip` from the latest github release
-3. unzip `spacy-textcat.zip` (you should have a `sapcy-textcat` folder as a result)
-4. execute `python extract-relation-info.py celex-32013R0575-1.txt.flat-lists.txt`
+1) download BERT model `bert-base-srl-2019.06.17.tar.gz` from the latest github release
 
-If you want to execute on a different file:
+2) download `spacy-textcat.zip` from the latest github release
 
-1. download the text version of the eur-lex law, save it as a text file
-2. reformat the text file to match the space conventions found in `celex-32013R0575-1.txt`
-3. execute `python process-article-lists.py <yourfile>.txt`
-4. execute `python extract-relation-info.py <yourfile>.txt.flat-lists.txt`
+3) Set the path to the directory where the BERT/SPACY model is located in: https://github.com/CrossLangNV/DGFISMA_reporting_obligations/blob/dev/dbuild.sh 
 
-This program generates two outputs
+4) Set the path to the correct template (template provided here: <em>tests/test_files/templates/out.html.template</em>) in `dbuild.sh`.
 
-1. an html file, which is human-friendly
-2. a console outut, which outputs for every line the found relation-sentences and their categorization
+5) Set the path to the correct typesystem (provided: <em>tests/test_files/typesystems/typesystem.xml</em>) in `dbuild.sh`.
 
-It's probably wise to add code to output a json or another format which can easily be imported in a database
+If the docker was successfully built, and is running, a POST request with a json having a "cas_content" and a "content_type" can be made to <em>{localhost:5004}/add_reporting_obligations/</em>.
+The "cas_content" is a UIMA CAS object, encoded in base64, the "content_type" can be "html" or "pdf".
 
-----------------------------------
+Note that before sending to the Reporting Obligations API, the json should have been POSTed to the API for paragraph detection (https://github.com/CrossLangNV/DGFISMA_paragraph_detection), because the algorithm for detection and processing of reporting obligations relies on annotations/views added to the CAS by this API call. 
 
-The output of the SRL is formatted as a <a href="https://www.aclweb.org/anthology/J05-1004.pdf">PropBank frameset</a>, but has adopted unified conventions accross possible verbs.
+Given a json with a "cas_content" and a "content_type" field (see <em>tests/test_files/response_json_paragraph_annotations</em> for examples), the POST request to <em>{localhost:5004}/add_reporting_obligations/</em> will return a json with the same fields, but now the base64 encoded CAS object available via the "cas_content" field will contain a `ReportingObligationsView`. 
+
+## Algorithms
+
+This code repository aims to solve two tasks:
+
+1) Processing of paragraph annotations ( `de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph` ) added by the paragraph annotation API.
+
+2) Detection and analysis of reporting obligations.
+
+
+### Processing of paragraph annotations
+
+Processing of paragraph annotations (i.e. detected enumerations) is implemented via the `ListTransformer` class. The class allows adding of a `ListView` containing sentence segments fit for analysis by the `ReportingObligationsFinder` class. I.e. given a CAS, running following commands from a Python interpreter will add a `ListView` to the CAS:
+
+```
+from src.transform import ListTransformer
+transformer=ListTransformer(CAS)
+transformer.add_list_view( OldSofaID='html2textView', NewSofaID = 'ListView'  )
+```
+
+### Detection and analysis of reporting obligations
+
+Given a CAS with a `ListView`, a `ReportingObligationsView` can be added running the following commands from a Python interpreter:
+
+```
+reporting_obligations_finder = ReportingObligationsFinder( ALLEN_NLP_SRL_PATH, SPACY_PATH  ) \
+reporting_obligations_finder.process_sentences(CAS, ListSofaID='ListView'  ) \
+reporting_obligations_finder.add_xml_to_cas( CAS, TEMPLATE_PATH, ROSofaID='ReportingObligationsView' ) \
+```
+
+With ALLEN_NLP_SRL_PATH, SPACY_PATH, TEMPLATE_PATH the paths to the AllenNLP/Spacy model and the html-template, repectively. 
+
+Running `reporting_obligations_finder.print_to_html(  TEMPLATE_PATH, OUTPUT_PATH )` will print the analyzed reporting obligations to a human "readable" html file (i.e. OUTPUT_PATH). 
+ 
+### ProBank frameset
+
+The html file produced by `reporting_obligations_finder.print_to_html(  TEMPLATE_PATH, OUTPUT_PATH )` is formatted as a <a href="https://www.aclweb.org/anthology/J05-1004.pdf">PropBank frameset</a>, but has adopted unified conventions accross possible verbs.
 
 Here is a description of the "reporting obligation" frameset developed for this project:
 
@@ -50,24 +81,9 @@ In addition to that, modifier arguments follow the general [Propbank conventions
 - `ARGM-MOD`: modal verb
 - `ARGM-DIS`: discourse connectives
 
-----------------------------------
 
-IMPORTANT UPDATES PLANNED:
+### Unit tests
 
-- In addition to the raw text for source, content, and destination: a list of terms from a linked entity glossary would be linked
-- These would come from an embedding space; and the distance between all pairs of token (with distance <= 0.6) would be precomputed and stored in a database, see below
+Unit tests (type pytest in command line from this directory) will pass when using bert and spacy models from first github release.
+https://github.com/CrossLangNV/DGFISMA_reporting_obligations/releases/tag/v1.0
 
-Here is a proposed database schema to handle the reporting obligation in its final form
-
-- `LawParagraph`: ID, TEXT_OF_PARAGRAPH (String), TITLE_SECTION (String), TITLE_PART (String), TITLE_DOC (String), SOURCE_DOCUMENT (see Document database)
-- `ObligationTerm`: ID, MAIN_TEXT (String), POSSIBLE_TEXTS (Array of String)
-- `ObligationTermsDistance`: ObligationTerm1.ID, ObligationTerm2.ID, Distance (between 0.0 and 1.0)
-- `Obligation`: ID, OBLIGATION_PARA (LawParagraph), OBLIGATION_SOURCE (ObligationTerm), OBLIGATION_SOURCE_TEXT (String), OBLIGATION_CONTENTS (Array of ObligationTerms), OBLIGATION_CONTENTS_TEXT (String), OBLIGATION_DESTINATION (ObligationTerm), OBLIGATION_DESTINATION_TEXT (String), OBLIGATION_RECURRENCE (Likely/Possible/Unlikely), OBLIGATION_REOCCURRENCE (Likely/Possible/Unlikely), OBLIGATION_FREQUENCY_TEXT (String)
-
-Then, search would work this way:
-
-- Three text boxes (Source, Content, Destination) where users can type a list of ObligationTerms (with auto-completion)
-- For each text box, an acceptable distance is selected (by default: 0.15; options: 0.00; 0.15; 0.25; 0.40; 0.50; 0.60)
-- For each text box, a list of acceptable ObligationTerms is computed (all terms whose distance with one of the terms listed in the box is smaller than the acceptable distance)
-- Then all obligations which contain one of the acceptable terms in the correct field are returned.
-- These can then be reranked based on a distance score, if desired, but other orders are possible (date of source document, etc...)

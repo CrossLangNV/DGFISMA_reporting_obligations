@@ -10,7 +10,7 @@ sentencizer.add_pipe(sentencizer.create_pipe('sentencizer'))
 section_regexp = r'^(Part|Title|Chapter|Section|Sub-Section|Article) ([0-9.]|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE|TEN|ELEVEN|TWELVE|THIRTEEN|FOURTEEN|FIFTEEN|SIXTEEN|SEVENTEEN|EIGHTEEN|NINETEEN|TWENTY|I|II|III|IV|V|VI|VII|VIII|IX|X|X(I|II|III|IV|V|VI|VII|VIII|IX|X))+ *$'
 
 #INPUT:
-input_sentences = open('./process-article-lists.py.input.txt')
+#input_sentences = open('./process-article-lists.py.input.txt')
 
 if len(sys.argv) > 1 and len(sys.argv[1])>=1:
     input_sentences = open(sys.argv[1])

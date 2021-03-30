@@ -1,0 +1,676 @@
+Whereas:
+   
+      
+      
+      
+         
+            
+               (1)
+            
+            
+               The provisional system of instalments on contributions to the administrative expenditures of the Board, laid down in Commission Delegated Regulation (EU) No 1310/2014 (2), was based on a simplified methodology and covered only a limited subset of entities, namely the entities which are considered significant by the European Central Bank (ECB) (‘significant entities’). That provisional system was introduced in order to ensure sufficient funding for the establishment of the Board while minimising the administrative burden for the Board, which at the time had only a limited structure and operational capacity. The provisional system was intended to apply until the Commission would adopt a final system for the determination and raising of the contributions to administrative expenditures.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (2)
+            
+            
+               As the Board has acquired a more stable structure and operational capacity, it is now appropriate to establish the final system of annual contributions to the administrative expenditures of the Board. A final system should replace the provisional system laid down in Delegated Regulation (EU) No 1310/2014.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (3)
+            
+            
+               Such a final system should provide for the determination and raising of administrative contributions not only for significant entities, but for all entities that are subject to the Single Resolution Mechanism. The contributions should be calculated at the highest level of consolidation of those entities within the participating Member States, since all subsidiaries of a group inside the perimeter of consolidation fall within the scope of the decision-making powers of the Board when adopting group resolution plans, carrying out the assessment of resolvability of groups and adopting resolution decisions for groups. The exercise of those tasks implies expenditures for the Board for collecting and analysing information and data related to each subsidiary included in the perimeter of consolidation. Since those are expenditures related to the services provided by the Board to the entities that are subject to the Single Resolution Mechanism, they should be paid by those entities and therefore the administrative contributions should be calculated on the basis of their consolidated accounts at the highest level of consolidation within the participating Member States and only one contribution per group should be calculated.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (4)
+            
+            
+               Pursuant to Article 65(3) of Regulation (EU) No 806/2014 the Board is to determine and raise contributions as well as to ensure that they are fully and timely paid. In order to enable the Board to meet those requirements, an efficient system for raising the administrative contributions from the institutions and entities referred to in Article 2 of Regulation (EU) No 806/2014 should be ensured. Those institutions and entities are already subject to numerous reporting obligations set out in Union legislation. More specifically, pursuant to Regulation (EU) No 1163/2014 of the European Central Bank (3), the ECB collects data on total assets and total risk exposure for the purposes of calculating supervisory fees. The data collected in accordance with Regulation (EU) No 1163/2014 can be meaningfully used for the calculation of the administrative contributions to the Board. Pursuant to Article 30(2) of Regulation (EU) No 806/2014, the Board and the ECB are to cooperate closely in the exercise of their respective responsibilities under that Regulation and, in particular, provide each other with all the information necessary for the performance of their tasks. It is more efficient to request the ECB to transmit data it received and verified in the exercise of its tasks and powers conferred on it by Council Regulation (EU) No 1024/2013 (4) to the Board, than to duplicate the reporting burden for the institutions and entities concerned. Data sharing between the ECB and the Board would also allow avoiding duplication of the data verification process by the Board and builds on the obligation of the Board and the ECB to cooperate closely in the exercise of their respective responsibilities under Regulation (EU) No 806/2014. Any duplication of the data reporting and verification processes would inevitably require more time for the calculation and raising of contributions and would lead to a less efficient system. It follows that, as a part of the cooperation obligation, the ECB should be required to transmit to the Board the data received from the institutions and entities concerned for the purpose of calculating contributions to the Board. The Board should rely to the greatest extent possible on the data collected by the ECB. The Board should have access to the aforementioned data to the extent necessary for the fulfilment of its tasks under this Regulation.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (5)
+            
+            
+               The allocation of contributions should reflect the difference in the workload and related expenditures for the entities under the Board's direct responsibility as opposed to those under the responsibility of national resolution authorities. Therefore, this Regulation should determine how the contributions should be split between those two groups of entities. Within those two groups, the final system established by this Regulation should require entities to contribute in proportion to the resource requirements that they individually place on the Board, as approximated by observable data.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (6)
+            
+            
+               In order to provide certainty, both to the Board and to the entities concerned, on how individual annual contributions are to be adjusted in the case of an error in the calculation or changes to the underlying data, this Regulation should lay down specific rules in that respect. Where the Board makes an error in the calculation of the annual contribution, it should be required to rectify that error. Such a requirement should apply as regards errors that occur because the Board applies incorrectly the methodology for calculating the individual annual contributions. In such cases, all contributions should be amended. On the contrary, cases where the input data used in the calculation of individual annual contributions is not correct or is subject to a change after the calculation was performed should not be considered errors in the calculation and should therefore be treated differently. In such cases, only the contributions of the entities whose data was not correct or was subject to a change should be amended.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (7)
+            
+            
+               In accordance with Article 3 of Council Regulation No 1 (5) the contribution notice and any further communications by the Board should be in the language of the Member State in which the recipient institution is established.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (8)
+            
+            
+               The payments of the annual contributions should be enforceable and interest on late payment should apply in the event of partial payment, non-payment or non-compliance with the conditions for payment specified in the contribution notice, in order to ensure the full and timely payment of the contributions.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (9)
+            
+            
+               The contributions of significant entities covered by the provisional system should be reassessed to take into account the amounts paid by them under that provisional system. Any difference between the instalments paid on the basis of the provisional system and the contributions calculated in accordance with the final system should be settled in the calculation of the contributions to the administrative expenditures of the Board for the year following the end of the provisional period.
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (10)
+            
+            
+               Since this Regulation introduces the final system of contributions to the administrative expenditures of the Board, the Regulation on the provisional system is no longer necessary and should be repealed,
+            
+         
+      
+   
+____________________________________________________________________________________________________
+This Regulation lays down rules to determine:
+   
+      
+      
+      
+         
+            
+               (1)
+            
+            
+               the final system for the calculation of the contributions to the administrative expenditures of the Single Resolution Board (‘the Board’) due by the entities referred to in Article 2 of Regulation (EU) No 806/2014;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (2)
+            
+            
+               the way in which the contributions are to be paid;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (3)
+            
+            
+               the registration, accounting, reporting and other rules necessary to ensure that the contributions are paid fully and in a timely manner;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (4)
+            
+            
+               the methodology for the recalculation and adjustment of the contributions due for the provisional period.
+            
+         
+      
+   
+____________________________________________________________________________________________________
+For the purposes of this Regulation, the definitions set out in Regulation (EU) No 1163/2014 shall apply. The following definitions shall also apply:
+   
+      
+      
+      
+         
+            
+               (1)
+            
+            
+               ‘administrative expenditures of the Board’ means the expenditure of Part I of the budget of the Board, as referred to in Article 59(2) of Regulation (EU) No 806/2014;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (2)
+            
+            
+               ‘annual contribution’ means the contribution to be collected by the Board for a given financial year in accordance with this Regulation in order to cover the administrative expenditures of the Board;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (3)
+            
+            
+               ‘contribution debtor’ means the fee debtor determined in accordance with Article 4 of Regulation (EU) No 1163/2014 for the purposes of collecting the supervisory fee and falling under the scope of Article 2 of Regulation (EU) No 806/2014;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (4)
+            
+            
+               ‘provisional period’ means the period beginning on 19 August 2014 and ending on 31 December 2017.
+            
+         
+      
+   
+____________________________________________________________________________________________________
+1.   The total amount to be raised in accordance with Article 3 shall be allocated as follows:
+   
+      
+      
+      
+         
+            
+               (a)
+            
+            
+               95 % to the following entities and groups:
+               
+                  
+                  
+                  
+                     
+                        
+                           (i)
+                        
+                        
+                           entities and groups referred to in Article 7(2) of Regulation (EU) No 806/2014;
+                        
+                     
+                  
+               
+               
+                  
+                  
+                  
+                     
+                        
+                           (ii)
+                        
+                        
+                           entities and groups with regard to which the Board has decided to exercise powers under Regulation (EU) No 806/2014 pursuant to Article 7(4)(b) of that Regulation;
+                        
+                     
+                  
+               
+               
+                  
+                  
+                  
+                     
+                        
+                           (iii)
+                        
+                        
+                           entities and groups in relation to which participating Member States have decided in accordance with Article 7(5) of Regulation (EU) No 806/2014 that the Board exercise powers and responsibilities conferred to it by that Regulation;
+                        
+                     
+                  
+               
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (b)
+            
+            
+               5 % to entities and groups referred to in Article 7(3) of Regulation (EU) No 806/2014.
+            
+         
+      
+   
+____________________________________________________________________________________________________
+95 % to the following entities and groups:
+               
+                  
+                  
+                  
+                     
+                        
+                           (i)
+                        
+                        
+                           entities and groups referred to in Article 7(2) of Regulation (EU) No 806/2014;
+                        
+                     
+                  
+               
+               
+                  
+                  
+                  
+                     
+                        
+                           (ii)
+                        
+                        
+                           entities and groups with regard to which the Board has decided to exercise powers under Regulation (EU) No 806/2014 pursuant to Article 7(4)(b) of that Regulation;
+                        
+                     
+                  
+               
+               
+                  
+                  
+                  
+                     
+                        
+                           (iii)
+                        
+                        
+                           entities and groups in relation to which participating Member States have decided in accordance with Article 7(5) of Regulation (EU) No 806/2014 that the Board exercise powers and responsibilities conferred to it by that Regulation;
+                        
+                     
+                  
+               
+____________________________________________________________________________________________________
+3.   For the purpose of applying the provisions referred to in paragraph 2:
+   
+      
+      
+      
+         
+            
+               (a)
+            
+            
+               ‘annual supervisory fee’ means individual annual contribution;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (b)
+            
+            
+               ‘significant supervised entity’ or ‘significant supervised group’ means an entity or group as referred to in Article 4(1)(a);
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (c)
+            
+            
+               ‘less significant supervised entity’ or ‘less significant supervised group’ means an entity or group as referred to in Article 4(1)(b);
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (d)
+            
+            
+               ‘supervised entity’ or ‘supervised group’ means any entity or group;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (e)
+            
+            
+               ‘fee debtor’ means contribution debtor.
+            
+         
+      
+   
+____________________________________________________________________________________________________
+2.   The data shall contain at least the following elements:
+   
+      
+      
+      
+         
+            
+               (a)
+            
+            
+               the identity and contact details of each contribution debtor as determined in accordance with Article 4 of Regulation (EU) No 1163/2014 for the purpose of the supervisory fees;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (b)
+            
+            
+               the fee factors determined in accordance with Article 10 of Regulation (EU) No 1163/2014;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (c)
+            
+            
+               whether a contribution debtor is significant in accordance with Article 6(4) of Regulation (EU) No 1024/2013 or is an entity or group in relation to which the ECB has decided in accordance with Article 6(5)(b) of Regulation (EU) No 1024/2013 to exercise directly all of the relevant powers;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (d)
+            
+            
+               any data that the ECB has determined in the absence of reporting from a contribution debtor, in accordance with Article 10(5) of Regulation (EU) No 1163/2014;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (e)
+            
+            
+               the validity date underlying the fee calculation of each contribution debtor determining the duration the contribution debtor was subject to the supervisory fee and any change of status in accordance with Article 7(2) of Regulation (EU) No 1163/2014 in the given fee period.
+            
+         
+      
+   
+____________________________________________________________________________________________________
+2.   The Board shall notify the contribution notice through any of the following means:
+   
+      
+      
+      
+         
+            
+               (a)
+            
+            
+               electronically or by other comparable means of communication;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (b)
+            
+            
+               by fax;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (c)
+            
+            
+               by express courier service;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (d)
+            
+            
+               by registered mail with a form for acknowledgement of receipt;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (e)
+            
+            
+               by service or delivery by hand.
+            
+         
+      
+   
+____________________________________________________________________________________________________
+6.   Where the Board fully or partially outsources tasks in accordance with paragraph 1, it shall ensure at all times that:
+   
+      
+      
+      
+         
+            
+               (a)
+            
+            
+               any contract concluded for the purposes of the outsourcing does not provide for the delegation of the Board's responsibility;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (b)
+            
+            
+               any contract concluded for the purposes of the outsourcing does not provide for an exclusion of the Board's accountability under Article 45 and Article 46(1) of Regulation (EU) No 806/2014, or of its independence under Article 47 of that Regulation;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (c)
+            
+            
+               the outsourcing does not result in depriving the Board from the necessary systems and controls to manage the risks it faces;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (d)
+            
+            
+               the service provider implements business continuity arrangements equivalent to those of the Board;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (e)
+            
+            
+               the Board retains the necessary expertise and resources to evaluate the quality of the services provided and the organisational adequacy of the service provider; the Board supervises the outsourced functions effectively and manages the risks associated with the outsourcing on an ongoing basis;
+            
+         
+      
+   
+   
+      
+      
+      
+         
+            
+               (f)
+            
+            
+               the Board has direct access to the relevant information allowing it to exercise the necessary control on the outsourced tasks.
+            
+         
+      
+   
+____________________________________________________________________________________________________
