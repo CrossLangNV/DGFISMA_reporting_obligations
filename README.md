@@ -55,6 +55,31 @@ reporting_obligations_finder.add_xml_to_cas( CAS, TEMPLATE_PATH, ROSofaID='Repor
 With ALLEN_NLP_SRL_PATH, SPACY_PATH, TEMPLATE_PATH the paths to the AllenNLP/Spacy model and the html-template, repectively. 
 
 Running `reporting_obligations_finder.print_to_html(  TEMPLATE_PATH, OUTPUT_PATH )` will print the analyzed reporting obligations to a human "readable" html file (i.e. OUTPUT_PATH). 
+ 
+### ProBank frameset
+
+The html file produced by `reporting_obligations_finder.print_to_html(  TEMPLATE_PATH, OUTPUT_PATH )` is formatted as a <a href="https://www.aclweb.org/anthology/J05-1004.pdf">PropBank frameset</a>, but has adopted unified conventions accross possible verbs.
+
+Here is a description of the "reporting obligation" frameset developed for this project:
+
+- `ARG0`: who needs to report
+- `ARG1`: what needs to be reported
+- `ARG2`: to who do we need to report it
+- `ARG3`: details about what needs to be reported
+
+In addition to that, modifier arguments follow the general [Propbank conventions](http://clear.colorado.edu/compsem/documents/propbank_guidelines.pdf):
+
+- `ARGM-TMP`: time
+- `ARGM-LOC`: location
+- `ARGM-CAU`: cause
+- `ARGM-EXT`: extent
+- `ARGM-MNR`: manner
+- `ARGM-PNC`: purpose
+- `ARGM-ADV`: general purpose
+- `ARGM-DIR`: direction
+- `ARGM-NEG`: negation marker
+- `ARGM-MOD`: modal verb
+- `ARGM-DIS`: discourse connectives
 
 
 ### Unit tests
