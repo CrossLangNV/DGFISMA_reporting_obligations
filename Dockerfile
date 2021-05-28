@@ -41,7 +41,7 @@ RUN apt-get -y install --reinstall build-essential
 RUN apt-get -y install gcc
 RUN pip install Cython
 
-RUN pip install docutils==0.15.0 spacy==2.1.9 cloudpickle==1.3.0 torchtext==0.5.0 scikit-learn==0.20.0 scipy==1.4.1 allennlp==0.9.0 dkpro-cassis==0.5.1 bs4==0.0.1 pytest==6.0.2 ipython jupyter jupyterlab
+RUN pip install overrides==3.1.0 docutils==0.15.0 spacy==2.1.9 cloudpickle==1.3.0 torchtext==0.5.0 scikit-learn==0.20.0 scipy==1.4.1 allennlp==0.9.0 dkpro-cassis==0.5.1 bs4==0.0.1 pytest==6.0.2 ipython jupyter jupyterlab
 
 WORKDIR /work
 COPY app.py /work
